@@ -1,0 +1,13 @@
+org: jamesargy6
+app: data-scraper-app
+service: data-scraper-app
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+
+functions:
+  hello:
+    handler: handler.hello
