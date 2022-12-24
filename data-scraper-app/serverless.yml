@@ -1,4 +1,3 @@
-org: jamesargy6
 app: data-scraper-app
 service: data-scraper-app
 
@@ -9,7 +8,7 @@ provider:
   runtime: nodejs14.x
   iam:
     deploymentRole:
-    Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
+      Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
 
 functions:
   hello:
