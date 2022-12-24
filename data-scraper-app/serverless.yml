@@ -2,6 +2,11 @@ org: jamesargy6
 app: data-scraper-app
 service: data-scraper-app
 
+provider:
+  iam:
+    deploymentRole:
+	  Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
+
 frameworkVersion: '3'
 
 provider:
