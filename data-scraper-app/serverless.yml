@@ -8,7 +8,7 @@ provider:
   runtime: nodejs14.x
   iam:
     deploymentRole:
-      Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
+      Fn::Sub: 'arn:aws:iam::104843235006:role/data-scraper-app-CloudFormationExecutionRole'
 
 functions:
   hello:
