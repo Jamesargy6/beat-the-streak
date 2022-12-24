@@ -5,7 +5,7 @@ service: data-scraper-app
 provider:
   iam:
     deploymentRole:
-	  Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
+    Fn::Sub: 'arn:aws:iam::${AWS::AccountId}:role/data-scraper-app-CloudFormationExecutionRole'
 
 frameworkVersion: '3'
 
