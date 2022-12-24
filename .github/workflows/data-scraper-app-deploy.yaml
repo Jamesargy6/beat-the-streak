@@ -1,0 +1,47 @@
+name: data-scraper-app-deploy
+
+on:
+  push:
+    branches: 
+      - main
+    paths:
+      - 'data-scraper-app/**'
+  workflow_dispatch:
+
+env:
+  AWS_REGION : "us-west-2"
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+        working-directory: data-scraper-app
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: './data-scraper-app/.nvmrc'
+      
+      - name: Install sls
+        run: npm install -g serverless
+
+      - name: Install packages
+        run: npm ci
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::104843235006:role/github-access-role
+          role-session-name: data-scraper-app-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to dev
+        run: sls deploy --stage dev
