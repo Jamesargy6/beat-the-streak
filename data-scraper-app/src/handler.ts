@@ -9,4 +9,4 @@ import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
    };
 };
 
-export { hello }
+module.exports = { hello }
