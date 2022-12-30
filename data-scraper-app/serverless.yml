@@ -1,6 +1,9 @@
 app: data-scraper-app
 service: data-scraper-app
 
+plugins:
+  - serverless-plugin-typescript
+
 frameworkVersion: '3'
 
 provider:
@@ -11,4 +14,4 @@ provider:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: src/handler.hello

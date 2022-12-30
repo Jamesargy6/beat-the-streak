@@ -18,5 +18,10 @@
   "homepage": "https://github.com/Jamesargy6/beat-the-streak#readme",
   "dependencies": {
     "serverless": "^3.25.1"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.51",
+    "serverless-plugin-typescript": "^2.1.4",
+    "typescript": "^3.9.10"
   }
 }
