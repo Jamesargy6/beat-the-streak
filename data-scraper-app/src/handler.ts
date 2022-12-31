@@ -1,10 +1,15 @@
-import {APIGatewayProxyResult} from 'aws-lambda';
+import MLBStatsAPI from 'mlb-stats-api'
+import { MLBStatsAPIClient } from './mlbStatsAPI/client'
+import { getGamePksFromSchedule } from './mlbStatsAPI/transform'
 
-const hello = async (): Promise<APIGatewayProxyResult> => ({
-    'statusCode': 200,
-    'body': JSON.stringify({
-        'message': 'hello world'
-    })
-});
+const mlbStatsAPI = new MLBStatsAPI()
+const mlbStatsAPIClient = new MLBStatsAPIClient(mlbStatsAPI)
 
-export {hello};
+const getGamePksByYear = async (): Promise<Array<number>> => {
+    const year = 2022 //TODO: receive as input from event
+    const schedule = await mlbStatsAPIClient.getRegularSeasonScheduleByYear(year)
+    const gamePks = getGamePksFromSchedule(schedule)
+    return gamePks
+}
+
+export { getGamePksByYear }
