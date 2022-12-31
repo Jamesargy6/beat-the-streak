@@ -11,26 +11,50 @@
       "ecmaVersion": 12,
       "sourceType": "module"
     },
-    "plugins": ["@typescript-eslint"],
-    "extends": ["eslint:all", "plugin:@typescript-eslint/recommended"],
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
     "rules": {
-      "require-await": "off",
-      "sort-keys": "off",
-      "quotes": ["error", "single"]
+      "quotes": ["error", "single"],
+      "semi": ["error", "never"],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { 
+          "argsIgnorePattern": "^_"
+        }
+      ],
+      "object-curly-spacing": ["error", "always"],
+      "array-bracket-spacing": ["error", "never"]
     },
     "env": {
       "browser": true,
       "es2021": true
     },
-    "ignorePatterns": ["node_modules", ".build", "coverage"]
+    "ignorePatterns": [
+      "node_modules",
+      ".build",
+      "coverage"
+    ]
   },
   "jest": {
-    "transform": {"^.+\\.ts?$": "ts-jest"},
+    "transform": {
+      "^.+\\.ts?$": "ts-jest"
+    },
     "testEnvironment": "node",
     "testRegex": "/test/.*\\.(test)?\\.(ts)$",
-    "moduleFileExtensions": ["js", "ts"],
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ],
     "collectCoverage": true,
-    "collectCoverageFrom": ["./src/**"],
+    "collectCoverageFrom": [
+      "./src/**"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 100,
@@ -41,6 +65,7 @@
     }
   },
   "dependencies": {
+    "mlb-stats-api": "^1.6.0",
     "serverless": "^3.25.1"
   },
   "devDependencies": {
