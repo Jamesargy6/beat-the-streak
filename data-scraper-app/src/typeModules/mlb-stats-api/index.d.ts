@@ -7,21 +7,62 @@ declare module 'mlb-stats-api' {
     RegularSeason = 'R'
   }
 
-  export type Game = { gamePk: number }
-  export type Date = { games: Array<Game> }
+  const enum LeftRightCode {
+    Left = 'L',
+    Right = 'R'
+  }
+
+  type PlayEventType = string
+
+  type Game = { gamePk: number }
+  type Date = { games: Array<Game> }
   export type Schedule = { dates: Array<Date> }
+  
+  type PlayResult = {
+    eventType: PlayEventType
+  }
+  type PlayAbout = {
+    isComplete: boolean
+  }
+  type MatchupPlayer = {
+    id: number
+  }
+  type PlayerSide = {
+    code: LeftRightCode 
+  }
+  type PlayMatchup = {
+    batter: MatchupPlayer,
+    batSide: PlayerSide,
+    pitcher: MatchupPlayer,
+    pitchHand: PlayerSide,
+
+  }
+  export type Play = {
+    result: PlayResult,
+    about: PlayAbout,
+    matchup: PlayMatchup,
+  }
+  export type PlayByPlay = {
+    allPlays: Array<Play>
+  }
 
   export type GetScheduleParams = {
     params: {
-      sportId: number,
+      sportId: SportID,
       startDate: string,
       endDate: string,
-      gameType?: string
+      gameType?: GameType
     }
   }
   export type GetScheduleResponse = { data: Schedule }
-  
+
+  export type GetPlayByPlayParams = {
+    pathParams: { gamePk: number }
+  }
+  export type GetGamePlayByPlayResponse = { data: PlayByPlay }
+
   export default class MLBStatsAPI {
      getSchedule(params: GetScheduleParams): Promise<GetScheduleResponse>
+     getGamePlayByPlay(params: GetPlayByPlayParams): Promise<GetGamePlayByPlayResponse>
   }
 }

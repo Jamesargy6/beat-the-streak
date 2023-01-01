@@ -13,5 +13,8 @@ provider:
     deploymentRole: 'arn:aws:iam::104843235006:role/data-scraper-app-CloudFormationExecutionRole'
 
 functions:
-  getGamePksByYear:
-    handler: src/handler.getGamePksByYear
+  getGamePks:
+    handler: src/handler.getGamePks
+  
+  getBatterPlayMap:
+    handler: src/handler.getBatterPlayMap
