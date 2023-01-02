@@ -25,18 +25,4 @@ const toPlay = (play: APIPlay): Play => {
   }
 }
 
-const toBatterPlayMap = (plays: Array<Play>): Record<number, Array<Play>> => {
-  const playMap = plays.reduce((currentMap: Record<number, Array<Play>>, play) => {
-      const { batterId } = play
-      if(!currentMap[batterId]) {
-        currentMap[batterId] = []
-      }
-      currentMap[batterId].push(play)
-      return currentMap
-    }, 
-    {}
-  )
-  return playMap
-}
-
-export { toGameDates, toPlay, toBatterPlayMap }
+export { toGameDates, toPlay }

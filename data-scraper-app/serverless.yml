@@ -16,5 +16,5 @@ functions:
   getGameDates:
     handler: src/handler.getGameDates
   
-  getBatterPlayMap:
-    handler: src/handler.getBatterPlayMap
+  getPlays:
+    handler: src/handler.getPlays

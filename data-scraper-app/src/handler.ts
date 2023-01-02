@@ -1,5 +1,5 @@
 import MLBStatsAPI from 'mlb-stats-api'
-import { toBatterPlayMap, toGameDates, toPlay } from './mlbStatsAPI/transform'
+import { toGameDates, toPlay } from './mlbStatsAPI/transform'
 import { MLBStatsAPIClient } from './mlbStatsAPI/client'
 import { GameDate, Play } from './mlbStatsAPI/types'
 
@@ -13,14 +13,13 @@ const getGameDates = async (): Promise<Array<GameDate>> => {
     return gateDates
 }
 
-const getBatterPlayMap = async (): Promise<Record<number, Play[]>> => {
+const getPlays = async (): Promise<Array<Play>> => {
   const gamePk = 662766 //TODO: receive as input from event
   const playByPlay = await mlbStatsAPIClient.getPlayByPlay(gamePk)
   const { allPlays: allAPIPlays } = playByPlay
   const allCompleteAPIPlays = allAPIPlays.filter(play => play.about.isComplete)
   const allPlays = allCompleteAPIPlays.map(play => toPlay(play))
-  const playMap = toBatterPlayMap(allPlays)
-  return playMap
+  return allPlays
 }
 
-export { getGameDates, getBatterPlayMap }
+export { getGameDates, getPlays }
