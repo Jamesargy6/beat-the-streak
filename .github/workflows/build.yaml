@@ -1,0 +1,62 @@
+name: build
+
+on:
+  pull_request:
+    branches: 
+      - main
+  workflow_dispatch:
+
+jobs:
+  data-scraper-app-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+        working-directory: data-scraper-app
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: './data-scraper-app/.nvmrc'
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            data-scraper-app:
+              - 'data-scraper-app/**'
+
+      - name: Install packages
+        if: steps.filter.outputs.data-scraper-app == 'true'
+        run: npm ci
+
+      - name: Test
+        if: steps.filter.outputs.data-scraper-app == 'true'
+        run: |
+          npm run lint
+          npm run test
+  
+  data-storage-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+        working-directory: data-storage
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: './data-storage/.nvmrc'
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            data-storage:
+              - 'data-storage/**'  
+
+      - name: Install packages
+        if: steps.filter.outputs.data-storage == 'true'
+        run: npm ci
