@@ -33,6 +33,9 @@ jobs:
         with:
           node-version-file: './data-storage/.nvmrc'
 
+      - name: Install sls
+        run: npm install -g serverless
+
       - name: Install packages
         run: npm ci
       
