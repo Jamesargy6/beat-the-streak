@@ -21,7 +21,6 @@ functions:
     handler: src/handler.getPlays
 
 stepFunctions:
-  validate: true
   stateMachines:
     ScrapeDataForYear:
       type: EXPRESS
