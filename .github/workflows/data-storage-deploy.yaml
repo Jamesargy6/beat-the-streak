@@ -6,6 +6,8 @@ on:
       - main
   workflow_dispatch:
 
+permissions: read-all
+
 env:
   AWS_REGION : "us-west-2"
 
