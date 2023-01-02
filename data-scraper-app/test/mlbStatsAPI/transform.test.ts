@@ -1,5 +1,5 @@
 import { Play as APIPlay, LeftRightCode } from 'mlb-stats-api'
-import { toBatterPlayMap, toGameDates, toPlay } from '../../src/mlbStatsAPI/transform'
+import { toGameDates, toPlay } from '../../src/mlbStatsAPI/transform'
 import { Play } from '../../src/mlbStatsAPI/types'
 
 describe('toGameDates', () => {
@@ -62,35 +62,4 @@ describe('toPlay', () => {
     const result = toPlay(apiPlay)
     expect(result).toEqual(expectedPlay)
   })
-})
-
-describe('toBatterPlayMap', () => {
-  const play0 = { 
-    batterId: 12345,
-    batSide: LeftRightCode.Right,
-    playResult: 'single',
-    pitcherId: 99999,
-    pitchHand: LeftRightCode.Right
-  }
-  const play1 = { 
-    batterId: 12346,
-    batSide: LeftRightCode.Right,
-    playResult: 'grounded_into_double_play',
-    pitcherId: 99999,
-    pitchHand: LeftRightCode.Right
-  }
-  const play2 = { 
-    batterId: 12345,
-    batSide: LeftRightCode.Right,
-    playResult: 'double',
-    pitcherId: 99998,
-    pitchHand: LeftRightCode.Left
-  }
-  const plays: Array<Play> = [play0, play1, play2]
-  const expectedPlayMap = {
-    12345: [play0, play2],
-    12346: [play1],
-  }
-  const result = toBatterPlayMap(plays)
-  expect(result).toEqual(expectedPlayMap)
 })

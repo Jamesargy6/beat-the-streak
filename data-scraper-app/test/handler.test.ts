@@ -2,7 +2,7 @@ import { Play as APIPlay, LeftRightCode, PlayByPlay, Schedule } from 'mlb-stats-
 import { MLBStatsAPIClient } from '../src/mlbStatsAPI/client'
 import * as transform from '../src/mlbStatsAPI/transform'
 
-import { getBatterPlayMap, getGameDates } from '../src/handler'
+import { getPlays, getGameDates } from '../src/handler'
 import { Play } from '../src/mlbStatsAPI/types'
 
 jest.mock('../src/mlbStatsAPI/client')
@@ -32,7 +32,7 @@ describe('getGamePks', () => {
   })
 })
 
-describe('getPlaysForGame', () => {
+describe('getPlays', () => {
   const testAPIPlay: APIPlay = {
     result: {
       eventType: 'single',
@@ -65,29 +65,25 @@ describe('getPlaysForGame', () => {
     pitchHand: LeftRightCode.Right
   }
   const mockToPlay = jest.fn((_: APIPlay) => testPlay)
-  const testPlayMap: Record<number, Play[]> = { 12345: [testPlay] }
-  const mockToBatterPlayMap = jest.fn((_: Play[]) => testPlayMap)
 
-  let getPlayByPlaySpy, flattenPlaySpy, getPlayMapSpy
+  let getPlayByPlaySpy, toPlaySpy
   beforeEach(() => {
     getPlayByPlaySpy = jest.spyOn(MLBStatsAPIClient.prototype, 'getPlayByPlay').mockImplementation(mockGetPlayByPlay)
-    flattenPlaySpy = jest.spyOn(transform, 'toPlay').mockImplementation(mockToPlay)
-    getPlayMapSpy = jest.spyOn(transform, 'toBatterPlayMap').mockImplementation(mockToBatterPlayMap)
+    toPlaySpy = jest.spyOn(transform, 'toPlay').mockImplementation(mockToPlay)
   })
 
   test('wiring', async () => {
-    const result = await getBatterPlayMap()
+    const result = await getPlays()
     expect(getPlayByPlaySpy).toHaveBeenCalledWith(662766)
-    expect(flattenPlaySpy).toHaveBeenNthCalledWith(1, testAPIPlay)
-    expect(getPlayMapSpy).toHaveBeenCalledWith([testPlay])
-    expect(result).toBe(testPlayMap)
+    expect(toPlaySpy).toHaveBeenNthCalledWith(1, testAPIPlay)
+    expect(result).toEqual([testPlay])
   })
 
   test('filters out incomplete plays', async () => {
     const testIncompletePlay = testAPIPlay
     testIncompletePlay.about.isComplete = false
     jest.spyOn(MLBStatsAPIClient.prototype, 'getPlayByPlay').mockImplementation(async (_: number) => ({ allPlays: [testIncompletePlay] }))
-    await getBatterPlayMap()
-    expect(flattenPlaySpy).not.toHaveBeenCalled()
+    await getPlays()
+    expect(toPlaySpy).not.toHaveBeenCalled()
   })
 })
