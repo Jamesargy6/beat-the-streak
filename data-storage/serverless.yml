@@ -1,9 +1,6 @@
 app: data-storage
 service: data-storage
 
-plugins:
-  - serverless-plugin-typescript
-
 frameworkVersion: '3'
 
 provider:
