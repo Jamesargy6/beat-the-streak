@@ -2,7 +2,7 @@ import { Play as APIPlay, LeftRightCode, PlayByPlay, Schedule } from 'mlb-stats-
 import { MLBStatsAPIClient } from '../src/mlbStatsAPI/client'
 import * as transform from '../src/mlbStatsAPI/transform'
 
-import { getBatterPlayMap, getGamePks } from '../src/handler'
+import { getBatterPlayMap, getGameDates } from '../src/handler'
 import { Play } from '../src/mlbStatsAPI/types'
 
 jest.mock('../src/mlbStatsAPI/client')
@@ -15,20 +15,20 @@ beforeEach(() => {
 describe('getGamePks', () => {
   const testSchedule: Schedule = { dates: [] }
   const mockGetRegularSeasonSchedule = jest.fn(async (_: number) => testSchedule)
-  const testGamePks = [1, 2, 3]
-  const mockToGamePks = jest.fn((_: Schedule) => testGamePks)
+  const testGameDates = [{ gamePk: 1, date: '2022-04-01' }, { gamePk: 2, date: '2022-04-01' }]
+  const mockToGameDates = jest.fn((_: Schedule) => testGameDates)
 
   let getScheduleByYearSpy, getGamePksFromScheduleSpy
   beforeEach(() => {
     getScheduleByYearSpy = jest.spyOn(MLBStatsAPIClient.prototype, 'getRegularSeasonSchedule').mockImplementation(mockGetRegularSeasonSchedule)
-    getGamePksFromScheduleSpy = jest.spyOn(transform, 'toGamePks').mockImplementation(mockToGamePks)
+    getGamePksFromScheduleSpy = jest.spyOn(transform, 'toGameDates').mockImplementation(mockToGameDates)
   })
 
   test('wiring', async () => {
-    const result = await getGamePks()
+    const result = await getGameDates()
     expect(getScheduleByYearSpy).toHaveBeenCalledWith(2022)
     expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
-    expect(result).toBe(testGamePks)
+    expect(result).toBe(testGameDates)
   })
 })
 

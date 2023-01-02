@@ -1,16 +1,16 @@
 
 import { Play as APIPlay, Schedule } from 'mlb-stats-api'
-import { Play } from './types'
+import { Play, GameDate } from './types'
 
-const toGamePks = (schedule: Schedule): Array<number> => {
-  const gamePks = schedule.dates.reduce((currentGamePks: Array<number>, date) => {
-          const dateGamePks = date.games.map((game) => game.gamePk)
-          currentGamePks.push(...dateGamePks)
-          return currentGamePks
+const toGameDates = (schedule: Schedule): Array<GameDate> => {
+  const gameDates = schedule.dates.reduce((currentGameDates: Array<GameDate>, date) => {
+          const dtGameDates = date.games.map(g => ({ gamePk: g.gamePk, date: g.officialDate }))
+          currentGameDates.push(...dtGameDates)
+          return currentGameDates
       },
       []
   )
-  return gamePks
+  return gameDates
 }
 
 const toPlay = (play: APIPlay): Play => {
@@ -39,4 +39,4 @@ const toBatterPlayMap = (plays: Array<Play>): Record<number, Array<Play>> => {
   return playMap
 }
 
-export { toGamePks, toPlay, toBatterPlayMap }
+export { toGameDates, toPlay, toBatterPlayMap }

@@ -1,16 +1,16 @@
 import MLBStatsAPI from 'mlb-stats-api'
-import { toBatterPlayMap, toGamePks, toPlay } from './mlbStatsAPI/transform'
+import { toBatterPlayMap, toGameDates, toPlay } from './mlbStatsAPI/transform'
 import { MLBStatsAPIClient } from './mlbStatsAPI/client'
-import { Play } from './mlbStatsAPI/types'
+import { GameDate, Play } from './mlbStatsAPI/types'
 
 const mlbStatsAPI = new MLBStatsAPI()
 const mlbStatsAPIClient = new MLBStatsAPIClient(mlbStatsAPI)
 
-const getGamePks = async (): Promise<Array<number>> => {
+const getGameDates = async (): Promise<Array<GameDate>> => {
     const year = 2022 //TODO: receive as input from event
     const schedule = await mlbStatsAPIClient.getRegularSeasonSchedule(year)
-    const gamePks = toGamePks(schedule)
-    return gamePks
+    const gateDates = toGameDates(schedule)
+    return gateDates
 }
 
 const getBatterPlayMap = async (): Promise<Record<number, Play[]>> => {
@@ -23,4 +23,4 @@ const getBatterPlayMap = async (): Promise<Record<number, Play[]>> => {
   return playMap
 }
 
-export { getGamePks, getBatterPlayMap }
+export { getGameDates, getBatterPlayMap }

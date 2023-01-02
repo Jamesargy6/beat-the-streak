@@ -7,3 +7,8 @@ export type Play = {
   pitcherId: number,
   pitchHand: LeftRightCode
 }
+
+export type GameDate = {
+  gamePk: number,
+  date: string
+}
