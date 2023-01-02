@@ -24,6 +24,7 @@ stepFunctions:
   validate: true
   stateMachines:
     ScrapeDataForYear:
+      type: EXPRESS
       definition:
         StartAt: GetGameDates
         States:
@@ -35,9 +36,7 @@ stepFunctions:
             Next: ScrapeDataForAllGames
           ScrapeDataForAllGames:
             Type: Map
-            ItemProcessor:
-              ProcessorConfig:
-                Mode: INLINE
+            Iterator:
               StartAt: GetPlays
               States:
                 GetPlays:
@@ -46,6 +45,5 @@ stepFunctions:
                     Fn::GetAtt: [getPlays, Arn]
                   OutputPath: $.Payload
                   End: true
-            MaxConcurrency: 40
             ResultPath: null
             End: true
