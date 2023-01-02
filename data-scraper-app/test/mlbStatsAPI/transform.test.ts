@@ -1,18 +1,30 @@
 import { Play as APIPlay, LeftRightCode } from 'mlb-stats-api'
-import { toBatterPlayMap, toGamePks, toPlay } from '../../src/mlbStatsAPI/transform'
+import { toBatterPlayMap, toGameDates, toPlay } from '../../src/mlbStatsAPI/transform'
 import { Play } from '../../src/mlbStatsAPI/types'
 
-describe('toGamePks', () => {
+describe('toGameDates', () => {
   test.each`
-  schedule                                                                                              | expectedGamePks
+  schedule                                                                                              | expectedGameDates
   ${{ dates: [] }}                                                                                      | ${[]}
   ${{ dates: [{ games: [] }] }}                                                                         | ${[]}
-  ${{ dates: [{ games: [{ gamePk: 1 }] }] }}                                                            | ${[1]}
-  ${{ dates: [{ games: [{ gamePk: 1 }, { gamePk: 2 }] }] }}                                             | ${[1,2]}
-  ${{ dates: [{ games: [{ gamePk: 1 }, { gamePk: 2 }] }, { games: [{ gamePk: 3 }, { gamePk: 4 }] }] }}  | ${[1,2,3,4]}
-  `('transforms schedule to array of gamePks', ({ schedule, expectedGamePks }) => {
-    const gamePks = toGamePks(schedule)
-    expect(gamePks).toEqual(expectedGamePks)
+  ${{ dates: [{ games: [{ gamePk: 1, officialDate: '2022-04-01' }] }] }}                                | ${[{ gamePk: 1, date: '2022-04-01' }]}
+  ${{ dates: [{ games: [
+    { gamePk: 1, officialDate: '2022-04-01'  },
+    { gamePk: 2, officialDate: '2022-04-01'  }
+  ] }] }}                                                                                               | ${[{ gamePk: 1, date: '2022-04-01' }, { gamePk: 2, date: '2022-04-01' }]}
+  ${{ dates: [
+    { games: [
+      { gamePk: 1, officialDate: '2022-04-01'  },
+      { gamePk: 2, officialDate: '2022-04-01'  }
+    ] }, 
+    { games: [
+      { gamePk: 3, officialDate: '2022-04-02'  },
+      { gamePk: 4, officialDate: '2022-04-02'  }
+    ] 
+  }] }}                                                                                                 | ${[{ gamePk: 1, date: '2022-04-01' }, { gamePk: 2, date: '2022-04-01' }, { gamePk: 3, date: '2022-04-02' }, { gamePk: 4, date: '2022-04-02' }]}
+  `('transforms schedule to array of gameDates', ({ schedule, expectedGameDates }) => {
+    const gateDates = toGameDates(schedule)
+    expect(gateDates).toEqual(expectedGameDates)
   })
 })
 

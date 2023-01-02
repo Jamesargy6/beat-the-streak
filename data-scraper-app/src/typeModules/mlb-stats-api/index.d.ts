@@ -14,7 +14,7 @@ declare module 'mlb-stats-api' {
 
   type PlayEventType = string
 
-  type Game = { gamePk: number }
+  type Game = { gamePk: number, officialDate: string }
   type Date = { games: Array<Game> }
   export type Schedule = { dates: Array<Date> }
   
