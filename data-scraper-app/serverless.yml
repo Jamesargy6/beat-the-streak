@@ -46,7 +46,8 @@ stepFunctions:
                   Resource: "arn:aws:states:::lambda:invoke"
                   Parameters:
                     Payload.$: $,
-                    FunctionName: Fn::GetAtt: [getPlays, Arn]
+                    FunctionName:
+                      Fn::GetAtt: [getPlays, Arn]
                   OutputPath: $.Payload
                   End: true
             ResultPath: null
