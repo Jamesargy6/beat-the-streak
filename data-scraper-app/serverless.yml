@@ -27,6 +27,8 @@ stepFunctions:
       loggingConfig:
         level: ALL
         includeExecutionData: true
+        destinations:
+          - Fn::GetAtt: [ScrapeDataForYearLogGroup, Arn]
       definition:
         StartAt: GetGameDates
         States:
@@ -55,3 +57,10 @@ stepFunctions:
                   End: true
             ResultPath: null
             End: true
+
+resources:
+  Resources:
+    ScrapeDataForYearLogGroup:
+      Type: AWS::Logs::LogGroup
+      Properties:
+        LogGroupName: !Join [ "/", [ "stepfunctions", ScrapeDataForYear]]
