@@ -3,6 +3,7 @@ service: data-scraper-app
 
 plugins:
   - serverless-plugin-typescript
+  - serverless-step-functions
 
 frameworkVersion: '3'
 
@@ -18,3 +19,33 @@ functions:
   
   getPlays:
     handler: src/handler.getPlays
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    ScrapeDataForYear:
+      definition:
+        StartAt: GetGameDates
+        States:
+          GetGameDates:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [getGameDates, Arn]
+            OutputPath: $.Payload
+            Next: ScrapeDataForAllGames
+          ScrapeDataForAllGames:
+            Type: Map
+            ItemProcessor:
+              ProcessorConfig:
+                Mode: INLINE
+              StartAt: GetPlays
+              States:
+                GetPlays:
+                  Type: Task
+                  Resource:
+                    Fn::GetAtt: [getPlays, Arn]
+                  OutputPath: $.Payload
+                  End: true
+            MaxConcurrency: 40
+            ResultPath: null
+            End: true
