@@ -1,0 +1,37 @@
+app: data-storage
+service: data-storage
+
+plugins:
+  - serverless-plugin-typescript
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  iam:
+    deploymentRole: 'arn:aws:iam::104843235006:role/data-scraper-app-CloudFormationExecutionRole'
+
+resources:
+  Resources:
+    playTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: bts-play
+        AttributeDefinitions:
+          - AttributeName: playerId
+            AttributeType: S
+          - AttributeName: date
+            AttributeType: S
+          - AttributeName: playIndex
+            AttributeType: N
+        KeySchema:
+          - AttributeName: playerId
+            KeyType: HASH
+          - AttributeName: date
+            KeyType: RANGE
+          - AttributeName: playIndex
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10

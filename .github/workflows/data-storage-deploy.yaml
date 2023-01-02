@@ -1,11 +1,11 @@
-name: data-scraper-app-deploy
+name: data-storage-deploy
 
 on:
   push:
     branches: 
       - main
     paths:
-      - 'data-scraper-app/**'
+      - 'data-storage/**'
   workflow_dispatch:
 
 env:
@@ -22,13 +22,18 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: data-scraper-app
+        working-directory: data-storage
 
     steps:
+      - uses: fountainhead/action-wait-for-check@v1.1.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: data-scraper-app-deploy
+          ref: ${{ github.sha }}
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version-file: './data-scraper-app/.nvmrc'
+          node-version-file: './data-storage/.nvmrc'
 
       - name: Install packages
         run: npm ci
@@ -37,7 +42,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::104843235006:role/github-access-role
-          role-session-name: data-scraper-app-deploy
+          role-session-name: data-storage-deploy
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to dev
