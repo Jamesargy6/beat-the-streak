@@ -20,15 +20,12 @@ resources:
             AttributeType: S
           - AttributeName: date
             AttributeType: S
-          - AttributeName: playIndex
+          - AttributeName: date_index
             AttributeType: N
         KeySchema:
           - AttributeName: playerId
             KeyType: HASH
-          - AttributeName: date
-            KeyType: RANGE
-          - AttributeName: playIndex
-            KeyType: RANGE
+          - AttributeName: date_index
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
