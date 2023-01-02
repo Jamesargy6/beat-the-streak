@@ -44,4 +44,4 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to dev
-        run: sls deploy --stage dev --region ${{ env.AWS_REGION }}
+        run: sls deploy --stage dev --region ${{ env.AWS_REGION }} --force
