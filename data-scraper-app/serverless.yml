@@ -24,6 +24,9 @@ stepFunctions:
   stateMachines:
     ScrapeDataForYear:
       type: EXPRESS
+      loggingConfig:
+        level: ALL
+        includeExecutionData: true
       definition:
         StartAt: GetGameDates
         States:
