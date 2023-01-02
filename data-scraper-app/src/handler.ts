@@ -6,15 +6,15 @@ import { GameDate, Play } from './mlbStatsAPI/types'
 const mlbStatsAPI = new MLBStatsAPI()
 const mlbStatsAPIClient = new MLBStatsAPIClient(mlbStatsAPI)
 
-const getGameDates = async (): Promise<Array<GameDate>> => {
-    const year = 2022 //TODO: receive as input from event
+type GetGameDatesInput = { year: number }
+const getGameDates = async ({ year }: GetGameDatesInput): Promise<Array<GameDate>> => {
     const schedule = await mlbStatsAPIClient.getRegularSeasonSchedule(year)
     const gateDates = toGameDates(schedule)
     return gateDates
 }
 
-const getPlays = async (): Promise<Array<Play>> => {
-  const gamePk = 662766 //TODO: receive as input from event
+type GetPlaysInput = { gamePk: number }
+const getPlays = async ({ gamePk }: GetPlaysInput): Promise<Array<Play>> => {
   const playByPlay = await mlbStatsAPIClient.getPlayByPlay(gamePk)
   const { allPlays: allAPIPlays } = playByPlay
   const allCompleteAPIPlays = allAPIPlays.filter(play => play.about.isComplete)

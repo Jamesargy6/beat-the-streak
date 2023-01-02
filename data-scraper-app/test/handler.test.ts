@@ -25,8 +25,9 @@ describe('getGamePks', () => {
   })
 
   test('wiring', async () => {
-    const result = await getGameDates()
-    expect(getScheduleByYearSpy).toHaveBeenCalledWith(2022)
+    const year = 2022
+    const result = await getGameDates({ year })
+    expect(getScheduleByYearSpy).toHaveBeenCalledWith(year)
     expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
     expect(result).toBe(testGameDates)
   })
@@ -72,8 +73,9 @@ describe('getPlays', () => {
     toPlaySpy = jest.spyOn(transform, 'toPlay').mockImplementation(mockToPlay)
   })
 
+  const gamePk = 662766
   test('wiring', async () => {
-    const result = await getPlays()
+    const result = await getPlays({ gamePk })
     expect(getPlayByPlaySpy).toHaveBeenCalledWith(662766)
     expect(toPlaySpy).toHaveBeenNthCalledWith(1, testAPIPlay)
     expect(result).toEqual([testPlay])
@@ -83,7 +85,7 @@ describe('getPlays', () => {
     const testIncompletePlay = testAPIPlay
     testIncompletePlay.about.isComplete = false
     jest.spyOn(MLBStatsAPIClient.prototype, 'getPlayByPlay').mockImplementation(async (_: number) => ({ allPlays: [testIncompletePlay] }))
-    await getPlays()
+    await getPlays({ gamePk })
     expect(toPlaySpy).not.toHaveBeenCalled()
   })
 })
