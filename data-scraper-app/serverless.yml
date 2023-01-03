@@ -14,8 +14,8 @@ provider:
     deploymentRole: 'arn:aws:iam::104843235006:role/data-scraper-app-CloudFormationExecutionRole'
 
 functions:
-  getGameDates:
-    handler: src/handler.getGameDates
+  getGames:
+    handler: src/handler.getGames
   
   getPlays:
     handler: src/handler.getPlays
@@ -30,25 +30,27 @@ stepFunctions:
         destinations:
           - Fn::GetAtt: [ScrapeDataForYearLogGroup, Arn]
       definition:
-        StartAt: GetGameDates
+        StartAt: GetGames
         States:
-          GetGameDates:
+          GetGames:
             Type: Task
-            Resource: "arn:aws:states:::lambda:invoke"
+            Resource: arn:aws:states:::lambda:invoke
             Parameters:
               Payload.$: $
               FunctionName:
-                Fn::GetAtt: [getGameDates, Arn]
+                Fn::GetAtt: [getGames, Arn]
             OutputPath: $.Payload
             Next: ScrapeDataForAllGames
           ScrapeDataForAllGames:
             Type: Map
+            Parameters:
+              Index.$: $$.Map.Item.Index
             Iterator:
               StartAt: GetPlays
               States:
                 GetPlays:
                   Type: Task
-                  Resource: "arn:aws:states:::lambda:invoke"
+                  Resource: arn:aws:states:::lambda:invoke
                   Parameters:
                     Payload.$: $
                     FunctionName:
@@ -63,4 +65,4 @@ resources:
     ScrapeDataForYearLogGroup:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: !Join [ "/", [ "stepfunctions", ScrapeDataForYear]]
+        LogGroupName: !Join [ /, [ aws, lambda, ScrapeDataForYear]]

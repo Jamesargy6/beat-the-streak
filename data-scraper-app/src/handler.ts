@@ -1,16 +1,16 @@
 import MLBStatsAPI from 'mlb-stats-api'
-import { toGameDates, toPlay } from './mlbStatsAPI/transform'
+import { toGames, toPlay } from './mlbStatsAPI/transform'
 import { MLBStatsAPIClient } from './mlbStatsAPI/client'
-import { GameDate, Play } from './mlbStatsAPI/types'
+import { Game, Play } from './mlbStatsAPI/types'
 
 const mlbStatsAPI = new MLBStatsAPI()
 const mlbStatsAPIClient = new MLBStatsAPIClient(mlbStatsAPI)
 
 type GetGameDatesInput = { year: number }
-const getGameDates = async ({ year }: GetGameDatesInput): Promise<Array<GameDate>> => {
+const getGames = async ({ year }: GetGameDatesInput): Promise<Array<Game>> => {
     const schedule = await mlbStatsAPIClient.getRegularSeasonSchedule(year)
-    const gateDates = toGameDates(schedule)
-    return gateDates
+    const games = toGames(schedule)
+    return games
 }
 
 type GetPlaysInput = { gamePk: number }
@@ -22,4 +22,4 @@ const getPlays = async ({ gamePk }: GetPlaysInput): Promise<Array<Play>> => {
   return allPlays
 }
 
-export { getGameDates, getPlays }
+export { getGames, getPlays }
