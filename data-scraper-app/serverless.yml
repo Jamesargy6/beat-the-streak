@@ -65,4 +65,4 @@ resources:
     ScrapeDataForYearLogGroup:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: !Join [ /, [ aws, lambda, ScrapeDataForYear]]
+        LogGroupName: !Join [ /, [ stepFunctions, ScrapeDataForYear]]
