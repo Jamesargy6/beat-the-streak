@@ -1,30 +1,30 @@
 import { Play as APIPlay, LeftRightCode } from 'mlb-stats-api'
-import { toGameDates, toPlay } from '../../src/mlbStatsAPI/transform'
+import { toGames, toPlay } from '../../src/mlbStatsAPI/transform'
 import { Play } from '../../src/mlbStatsAPI/types'
 
-describe('toGameDates', () => {
+describe('toGames', () => {
   test.each`
   schedule                                                                                              | expectedGameDates
   ${{ dates: [] }}                                                                                      | ${[]}
   ${{ dates: [{ games: [] }] }}                                                                         | ${[]}
-  ${{ dates: [{ games: [{ gamePk: 1, officialDate: '2022-04-01' }] }] }}                                | ${[{ gamePk: 1, date: '2022-04-01' }]}
+  ${{ dates: [{ games: [{ gamePk: 1, officialDate: '2022-04-01', gameNumber: 1 }] }] }}                                | ${[{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }]}
   ${{ dates: [{ games: [
-    { gamePk: 1, officialDate: '2022-04-01'  },
-    { gamePk: 2, officialDate: '2022-04-01'  }
-  ] }] }}                                                                                               | ${[{ gamePk: 1, date: '2022-04-01' }, { gamePk: 2, date: '2022-04-01' }]}
+    { gamePk: 1, officialDate: '2022-04-01', gameNumber: 1 },
+    { gamePk: 2, officialDate: '2022-04-01', gameNumber: 1 }
+  ] }] }}                                                                                               | ${[{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }]}
   ${{ dates: [
     { games: [
-      { gamePk: 1, officialDate: '2022-04-01'  },
-      { gamePk: 2, officialDate: '2022-04-01'  }
+      { gamePk: 1, officialDate: '2022-04-01', gameNumber: 1 },
+      { gamePk: 2, officialDate: '2022-04-01', gameNumber: 1 }
     ] }, 
     { games: [
-      { gamePk: 3, officialDate: '2022-04-02'  },
-      { gamePk: 4, officialDate: '2022-04-02'  }
+      { gamePk: 3, officialDate: '2022-04-02', gameNumber: 1 },
+      { gamePk: 4, officialDate: '2022-04-02', gameNumber: 1 }
     ] 
-  }] }}                                                                                                 | ${[{ gamePk: 1, date: '2022-04-01' }, { gamePk: 2, date: '2022-04-01' }, { gamePk: 3, date: '2022-04-02' }, { gamePk: 4, date: '2022-04-02' }]}
+  }] }}                                                                                                 | ${[{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }, { gamePk: 3, date: '2022-04-02', gameNumber: 1 }, { gamePk: 4, date: '2022-04-02', gameNumber: 1 }]}
   `('transforms schedule to array of gameDates', ({ schedule, expectedGameDates }) => {
-    const gateDates = toGameDates(schedule)
-    expect(gateDates).toEqual(expectedGameDates)
+    const games = toGames(schedule)
+    expect(games).toEqual(expectedGameDates)
   })
 })
 
