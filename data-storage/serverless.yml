@@ -26,6 +26,7 @@ resources:
           - AttributeName: playerId
             KeyType: HASH
           - AttributeName: date_index
+            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
