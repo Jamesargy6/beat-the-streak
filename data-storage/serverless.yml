@@ -3,11 +3,24 @@ service: data-storage
 
 frameworkVersion: '3'
 
+plugins:
+  - serverless-plugin-typescript
+  - serverless-iam-roles-per-function
+
 provider:
   name: aws
   runtime: nodejs14.x
   iam:
     deploymentRole: 'arn:aws:iam::104843235006:role/data-scraper-app-CloudFormationExecutionRole'
+
+functions:
+  writePlaysToDynamo:
+    handler: src/handler.writePlaysToDynamo
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:PutItem        
+        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
 
 resources:
   Resources:

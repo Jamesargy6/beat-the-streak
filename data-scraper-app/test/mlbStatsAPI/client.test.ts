@@ -15,6 +15,11 @@ describe('MLBStatsAPIClient', () => {
 
   const getThing = () => new MLBStatsAPIClient(mockClient)
 
+  test('wiring', () => {
+    const thing = getThing()
+    expect(thing._client).toBe(mockClient)
+  })
+
   describe('getRegularSeasonScheduleByYear', () => {
     const testYear = 2022
     const expectedParams = {
