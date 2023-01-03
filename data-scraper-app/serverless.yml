@@ -45,7 +45,7 @@ stepFunctions:
             Type: Map
             Parameters:
               Index.$: $$.Map.Item.Index
-              Data.$: $$.Map.Item.Data
+              Data.$: $$.Map.Item.Value
             Iterator:
               StartAt: GetPlays
               States:
