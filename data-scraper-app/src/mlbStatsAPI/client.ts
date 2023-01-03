@@ -1,8 +1,7 @@
 import MLBStatsAPI from 'mlb-stats-api'
 import { GameType, PlayByPlay, Schedule, SportID } from 'mlb-stats-api'
-
 class MLBStatsAPIClient {
-    private _client: MLBStatsAPI
+    _client: MLBStatsAPI
     constructor (client: MLBStatsAPI) {
         this._client = client
     }

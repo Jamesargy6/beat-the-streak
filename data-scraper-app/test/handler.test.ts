@@ -1,5 +1,5 @@
 import { Play as APIPlay, LeftRightCode, PlayByPlay, Schedule } from 'mlb-stats-api'
-import { MLBStatsAPIClient } from '../src/mlbStatsAPI/client'
+import * as mlbStatsAPIClientFactory from '../src/mlbStatsAPI/client.factory'
 import * as transform from '../src/mlbStatsAPI/transform'
 
 import { getPlays, getGames } from '../src/handler'
@@ -18,16 +18,18 @@ describe('getGames', () => {
   const testGames = [{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }]
   const mockToGames = jest.fn((_: Schedule) => testGames)
 
-  let getScheduleByYearSpy, getGamePksFromScheduleSpy
+  const mockMLBStatsAPIClient = { getRegularSeasonSchedule: mockGetRegularSeasonSchedule, getPlayByPlay: jest.fn() }
+
+  let getGamePksFromScheduleSpy
   beforeEach(() => {
-    getScheduleByYearSpy = jest.spyOn(MLBStatsAPIClient.prototype, 'getRegularSeasonSchedule').mockImplementation(mockGetRegularSeasonSchedule)
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
     getGamePksFromScheduleSpy = jest.spyOn(transform, 'toGames').mockImplementation(mockToGames)
   })
 
   test('wiring', async () => {
     const year = 2022
     const result = await getGames({ year })
-    expect(getScheduleByYearSpy).toHaveBeenCalledWith(year)
+    expect(mockMLBStatsAPIClient.getRegularSeasonSchedule).toHaveBeenCalledWith(year)
     expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
     expect(result).toBe(testGames)
   })
@@ -67,16 +69,18 @@ describe('getPlays', () => {
   }
   const mockToPlay = jest.fn((_: APIPlay) => testPlay)
 
-  let getPlayByPlaySpy, toPlaySpy
+  const mockMLBStatsAPIClient = { getRegularSeasonSchedule: jest.fn(), getPlayByPlay: mockGetPlayByPlay }
+
+  let toPlaySpy
   beforeEach(() => {
-    getPlayByPlaySpy = jest.spyOn(MLBStatsAPIClient.prototype, 'getPlayByPlay').mockImplementation(mockGetPlayByPlay)
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
     toPlaySpy = jest.spyOn(transform, 'toPlay').mockImplementation(mockToPlay)
   })
 
   const gamePk = 662766
   test('wiring', async () => {
     const result = await getPlays({ gamePk })
-    expect(getPlayByPlaySpy).toHaveBeenCalledWith(662766)
+    expect(mockMLBStatsAPIClient.getPlayByPlay).toHaveBeenCalledWith(662766)
     expect(toPlaySpy).toHaveBeenNthCalledWith(1, testAPIPlay)
     expect(result).toEqual([testPlay])
   })
@@ -84,7 +88,7 @@ describe('getPlays', () => {
   test('filters out incomplete plays', async () => {
     const testIncompletePlay = testAPIPlay
     testIncompletePlay.about.isComplete = false
-    jest.spyOn(MLBStatsAPIClient.prototype, 'getPlayByPlay').mockImplementation(async (_: number) => ({ allPlays: [testIncompletePlay] }))
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
     await getPlays({ gamePk })
     expect(toPlaySpy).not.toHaveBeenCalled()
   })
