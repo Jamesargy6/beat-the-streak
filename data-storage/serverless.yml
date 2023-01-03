@@ -18,10 +18,8 @@ resources:
         AttributeDefinitions:
           - AttributeName: playerId
             AttributeType: S
-          - AttributeName: date
-            AttributeType: S
           - AttributeName: date_index
-            AttributeType: N
+            AttributeType: S
         KeySchema:
           - AttributeName: playerId
             KeyType: HASH
