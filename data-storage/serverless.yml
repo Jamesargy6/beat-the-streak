@@ -33,12 +33,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: playerId
             AttributeType: S
-          - AttributeName: date_index
+          - AttributeName: playId
             AttributeType: S
         KeySchema:
           - AttributeName: playerId
             KeyType: HASH
-          - AttributeName: date_index
+          - AttributeName: playId
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10
