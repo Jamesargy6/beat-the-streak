@@ -2,9 +2,10 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 
 import { DynamoClient } from './client'
+import { DynamoPlay } from './types'
 
 type DynamoClientInterface = {
-  writePlays(playId: string, plays: Array<{ playerId: number }>)
+  writePlays(dynamoPlays: Array<DynamoPlay>)
 }
 
 const makeDynamoClient = (region: string): DynamoClientInterface => {
