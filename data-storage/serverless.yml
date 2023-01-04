@@ -32,7 +32,7 @@ resources:
         TableName: bts-play
         AttributeDefinitions:
           - AttributeName: playerId
-            AttributeType: S
+            AttributeType: N
           - AttributeName: playId
             AttributeType: S
         KeySchema:
