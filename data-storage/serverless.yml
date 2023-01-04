@@ -20,7 +20,8 @@ functions:
     iamRoleStatements:
       - Effect: "Allow"        
         Action:
-          - dynamodb:PutItem        
+          - dynamodb:PutItem
+          - dynamodb:BatchWriteItem
         Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
 
 resources:

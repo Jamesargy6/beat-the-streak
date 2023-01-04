@@ -10,9 +10,7 @@ class DynamoClient {
     this._client = client
   }
 
-  async writePlays(playId: string, plays: Array<{ playerId: number }>) {
-    const { playerId } = plays[0]
-    const dynamoPlays: Array<DynamoPlay> = plays.map(play => ({ playerId, playId, play }))
+  async writePlays(dynamoPlays: Array<DynamoPlay>) {
     const putRequests = dynamoPlays.map(dynamoPlay => ({ PutRequest: { Item: dynamoPlay } }))
     const input = {
       RequestItems: {

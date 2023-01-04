@@ -21,7 +21,8 @@ describe('Dynamoclient', () => {
   test('writePlays', async () => {
     const playId = 'testPlayId'
     const playerId = 12345
-    const play = { playerId }
+    const play = { }
+    const dynamoPlay = { playerId, playId, play }
     
     const expectedBatchWriteInput = {
       RequestItems: {
@@ -30,7 +31,7 @@ describe('Dynamoclient', () => {
     }
 
     const thing = makeThing()
-    await thing.writePlays(playId, [play])
+    await thing.writePlays([dynamoPlay])
     expect(mockDynamoDBClient.batchWrite).toHaveBeenCalledWith(expectedBatchWriteInput)
 
   })
