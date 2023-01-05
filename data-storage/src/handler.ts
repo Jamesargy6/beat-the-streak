@@ -1,6 +1,6 @@
 import { AWS_REGION } from './constants'
 import { makeDynamoClient } from './dynamoDB/client.factory'
-import { toDynamoPlays } from './dynamoDB/transform'
+import { toGameIndex, toDynamoPlays } from './dynamoDB/transform'
 
 type WritePlaysToDynamoInput = {
   date: string,
@@ -10,7 +10,8 @@ type WritePlaysToDynamoInput = {
 const writePlaysToDynamo = async (event: WritePlaysToDynamoInput) => {
   const dynamoClient = makeDynamoClient(AWS_REGION)
   const { date, gameNumber, plays } = event
-  const dynamoPlays = toDynamoPlays(date, gameNumber, plays)
+  const gameIndex = toGameIndex(date, gameNumber)
+  const dynamoPlays = toDynamoPlays(gameIndex, plays)
   await dynamoClient.writePlays(dynamoPlays)
 }
 
