@@ -43,9 +43,9 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
-    Outputs:
-      WritePlaysToDynamoARN:
-        Value:
-          Fn::GetAtt: [writePlaysToDynamo, Arn]
-        Export:
-          Name: ${self:service}:${sls:stage}:WritePlaysToDynamoARN
+  Outputs:
+    WritePlaysToDynamoARN:
+      Value:
+        Fn::GetAtt: [writePlaysToDynamo, Arn]
+      Export:
+        Name: ${self:service}:${sls:stage}:WritePlaysToDynamoARN
