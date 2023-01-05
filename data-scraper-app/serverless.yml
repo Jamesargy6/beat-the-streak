@@ -56,7 +56,7 @@ stepFunctions:
                     FunctionName:
                       Fn::GetAtt: [getPlays, Arn]
                   ResultSelector:
-                    plays.$: $.Payload.plays
+                    plays.$: $.Payload
                   ResultPath: $.plays
                   Next: WritePlaysToDynamo
                 WritePlaysToDynamo:
