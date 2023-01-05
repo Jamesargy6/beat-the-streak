@@ -44,7 +44,6 @@ stepFunctions:
           ScrapeDataForAllGames:
             Type: Map
             Parameters:
-              Index.$: $$.Map.Item.Index
               Data.$: $$.Map.Item.Value
             Iterator:
               StartAt: GetPlays
@@ -56,7 +55,15 @@ stepFunctions:
                     Payload.$: $.Data
                     FunctionName:
                       Fn::GetAtt: [getPlays, Arn]
-                  OutputPath: $.Payload
+                  ResultPath: $.plays
+                  Next: WritePlaysToDynamo
+                WritePlaysToDynamo:
+                  Type: Task
+                  Resource: arn:aws:states:::lambda:invoke
+                  Parameters:
+                    Payload.$: $
+                    FunctionName:
+                      Fn::ImportValue: data-scraper:${sls:stage}:WritePlaysToDynamoARN
                   End: true
             ResultPath: null
             End: true
