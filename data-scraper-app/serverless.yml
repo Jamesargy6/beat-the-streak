@@ -63,7 +63,7 @@ stepFunctions:
                   Parameters:
                     Payload.$: $
                     FunctionName:
-                      Fn::ImportValue: data-scraper:${sls:stage}:WritePlaysToDynamoARN
+                      Fn::ImportValue: sls-data-storage-${sls:stage}-WritePlaysToDynamoLambdaFunctionQualifiedArn
                   End: true
             ResultPath: null
             End: true
