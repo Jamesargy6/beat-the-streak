@@ -2,19 +2,24 @@ import { DynamoPlay } from './types'
 
 const PLAY_NUMBER_FORMAT_LENGTH = 3
 
-const toPlayId = (date: string, gameNumber: number, playNumber: number): string => {
-  const formattedPlayNumber = String(playNumber).padStart(PLAY_NUMBER_FORMAT_LENGTH, '0')
-  const playId = `${date}:${gameNumber}:${formattedPlayNumber}`
-  return playId
+const toGameIndex = (date: string, gameNumber: number): string => {
+  const gameIndex = `${date}:${gameNumber}`
+  return gameIndex
 }
 
-const toDynamoPlays = (date: string, gameNumber: number, plays: Array<{ playerId: number }>): Array<DynamoPlay> => {
+const toPlayIndex = (gameIndex: string, playNumber: number): string => {
+  const formattedPlayNumber = String(playNumber).padStart(PLAY_NUMBER_FORMAT_LENGTH, '0')
+  const playIndex = `${gameIndex}:${formattedPlayNumber}`
+  return playIndex
+}
+
+const toDynamoPlays = (gameIndex: string, plays: Array<{ playerId: number }>): Array<DynamoPlay> => {
   const dynamoPlays: Array<DynamoPlay> = plays.map((play, playNumber) => {
-  const { playerId } = play
-  const playId = toPlayId(date, gameNumber, playNumber)
-    return { playerId, playId, play }
+  const { playerId: player_id } = play
+  const play_index = toPlayIndex(gameIndex, playNumber)
+    return { player_id, play_index, play }
   })
   return dynamoPlays
 }
 
-export { toPlayId, toDynamoPlays }
+export { toGameIndex, toDynamoPlays }

@@ -31,14 +31,14 @@ resources:
       Properties:
         TableName: bts-play
         AttributeDefinitions:
-          - AttributeName: playerId
+          - AttributeName: player_id
             AttributeType: N
-          - AttributeName: playId
+          - AttributeName: play_index
             AttributeType: S
         KeySchema:
-          - AttributeName: playerId
+          - AttributeName: player_id
             KeyType: HASH
-          - AttributeName: playId
+          - AttributeName: play_index
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10

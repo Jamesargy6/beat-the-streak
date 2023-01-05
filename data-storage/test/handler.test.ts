@@ -10,12 +10,15 @@ beforeEach(() => {
 })
 
 describe('writePlaysToDynamo', () => {
-  const testDynamoPlay = {  playerId: 12345, playId: '2022-04-01:1:000', play: { } }
+  const testGameIndex = '2022-04-01:1'
+  const mockToGameIndex = jest.fn(() => testGameIndex)
+  const testDynamoPlay = {  player_id: 12345, play_index: '2022-04-01:1:000', play: { } }
   const mockToDynamoPlays = jest.fn(() => [testDynamoPlay])
   const mockDynamoClient = { writePlays: jest.fn() }
 
-  let toDynamoPlaysSpy
+  let toGameIndexSpy, toDynamoPlaysSpy
   beforeEach(() => {
+    toGameIndexSpy = jest.spyOn(transform, 'toGameIndex').mockImplementation(mockToGameIndex)
     toDynamoPlaysSpy = jest.spyOn(transform, 'toDynamoPlays').mockImplementation(mockToDynamoPlays)
     jest.spyOn(dynamoDBClientFactory, 'makeDynamoClient').mockImplementation(() => mockDynamoClient)
   })
@@ -27,7 +30,8 @@ describe('writePlaysToDynamo', () => {
       plays: [{ playerId: 12345 }]
     }
     await writePlaysToDynamo(input)
-    expect(toDynamoPlaysSpy).toHaveBeenCalledWith(input.date, input.gameNumber, input.plays  )
+    expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gameNumber)
+    expect(toDynamoPlaysSpy).toHaveBeenCalledWith(testGameIndex, input.plays  )
     expect(mockDynamoClient.writePlays).toHaveBeenLastCalledWith([testDynamoPlay])
   })
 })

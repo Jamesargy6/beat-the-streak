@@ -1,6 +1,6 @@
 type DynamoPlay = {
-  playerId: number,
-  playId: string,
+  player_id: number,
+  play_index: string,
   play: object
 }
 

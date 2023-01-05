@@ -19,14 +19,14 @@ describe('Dynamoclient', () => {
   })
 
   test('writePlays', async () => {
-    const playId = 'testPlayId'
-    const playerId = 12345
+    const play_index = '2022-04-01:1:000'
+    const player_id = 12345
     const play = { }
-    const dynamoPlay = { playerId, playId, play }
+    const dynamoPlay = { player_id, play_index, play }
     
     const expectedBatchWriteInput = {
       RequestItems: {
-        'bts-play': [{ PutRequest: { Item: { playerId, playId, play } } }]
+        'bts-play': [{ PutRequest: { Item: { player_id, play_index, play } } }]
       }
     }
 
