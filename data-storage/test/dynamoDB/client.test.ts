@@ -26,7 +26,7 @@ describe('Dynamoclient', () => {
     
     const expectedBatchWriteInput = {
       RequestItems: {
-        'bts-play': [{ PutRequest: { Item: { player_id, play_index, play } } }]
+        'bts_play': [{ PutRequest: { Item: { player_id, play_index, play } } }]
       }
     }
 
