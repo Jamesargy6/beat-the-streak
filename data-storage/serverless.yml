@@ -22,14 +22,14 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
+        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts_play"
 
 resources:
   Resources:
     playTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts-play
+        TableName: bts_play
         AttributeDefinitions:
           - AttributeName: player_id
             AttributeType: N
