@@ -34,38 +34,29 @@ stepFunctions:
         States:
           GetGames:
             Type: Task
-            Resource: arn:aws:states:::lambda:invoke
-            Parameters:
-              Payload.$: $
-              FunctionName:
-                Fn::GetAtt: [getGames, Arn]
+            Resource:
+              Fn::GetAtt: [getGames, Arn]
             OutputPath: $.Payload
             Next: ScrapeDataForAllGames
           ScrapeDataForAllGames:
             Type: Map
             Parameters:
-              Data.$: $$.Map.Item.Value
+              $: $$.Map.Item.Value
             Iterator:
               StartAt: GetPlays
               States:
                 GetPlays:
                   Type: Task
-                  Resource: arn:aws:states:::lambda:invoke
-                  Parameters:
-                    Payload.$: $.Data
-                    FunctionName:
-                      Fn::GetAtt: [getPlays, Arn]
+                  Resource:
+                    Fn::GetAtt: [getPlays, Arn]
                   ResultSelector:
-                    plays.$: $.Payload
+                    $: $.Payload
                   ResultPath: $.plays
                   Next: WritePlaysToDynamo
                 WritePlaysToDynamo:
                   Type: Task
-                  Resource: arn:aws:states:::lambda:invoke
-                  Parameters:
-                    Payload.$: $.Data
-                    FunctionName:
-                      Fn::ImportValue: sls-data-storage-${sls:stage}-WritePlaysToDynamoLambdaFunctionQualifiedArn
+                  Resource:
+                    Fn::ImportValue: sls-data-storage-${sls:stage}-WritePlaysToDynamoLambdaFunctionQualifiedArn
                   End: true
             ResultPath: null
             End: true
