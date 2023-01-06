@@ -1,4 +1,4 @@
-app: data-scraper-app
+app: data-scraper-app 
 service: data-scraper-app
 
 plugins:
