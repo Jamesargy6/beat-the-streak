@@ -36,7 +36,6 @@ stepFunctions:
             Type: Task
             Resource:
               Fn::GetAtt: [getGames, Arn]
-            OutputPath: $.Payload
             Next: ScrapeDataForAllGames
           ScrapeDataForAllGames:
             Type: Map
@@ -49,8 +48,6 @@ stepFunctions:
                   Type: Task
                   Resource:
                     Fn::GetAtt: [getPlays, Arn]
-                  ResultSelector:
-                    $: $.Payload
                   ResultPath: $.plays
                   Next: WritePlaysToDynamo
                 WritePlaysToDynamo:
