@@ -50,8 +50,7 @@ stepFunctions:
                   Next: WritePlaysToDynamo
                 WritePlaysToDynamo:
                   Type: Task
-                  Resource:
-                    Fn::ImportValue: sls-data-storage-${sls:stage}-WritePlaysToDynamoLambdaFunctionQualifiedArn
+                  Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
                   End: true
             ResultPath: null
             End: true
