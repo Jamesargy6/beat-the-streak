@@ -1,4 +1,4 @@
-app: data-storage
+app: data-storage 
 service: data-storage
 
 frameworkVersion: '3'
