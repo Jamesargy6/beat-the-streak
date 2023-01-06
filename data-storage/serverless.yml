@@ -22,21 +22,21 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts_play"
+        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
 
 resources:
   Resources:
     playTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts_play
+        TableName: bts-play
         AttributeDefinitions:
-          - AttributeName: player_id
+          - AttributeName: batter_id
             AttributeType: N
           - AttributeName: play_index
             AttributeType: S
         KeySchema:
-          - AttributeName: player_id
+          - AttributeName: batter_id
             KeyType: HASH
           - AttributeName: play_index
             KeyType: RANGE

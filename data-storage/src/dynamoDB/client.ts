@@ -2,7 +2,7 @@ import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 
 import { DynamoPlay } from './types'
 
-const BTS_PLAY_TABLE_NAME = 'bts_play'
+const BTS_PLAY_TABLE_NAME = 'bts-play'
 
 class DynamoClient {
   _client: DynamoDBDocument

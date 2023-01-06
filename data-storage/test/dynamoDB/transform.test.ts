@@ -12,10 +12,10 @@ ${'2022-04-01'} | ${2}        | ${'2022-04-01:2'}
 
 test('toDynamoPlays transforms input into DynamoPlay', () =>{
   const gameIndex = '2022-04-01:1'
-  const play = { playerId: 12345 }
+  const play = { batterId: 12345 }
 
   const expectedResult = [{
-    player_id: play.playerId,
+    batter_id: play.batterId,
     play_index: '2022-04-01:1:000',
     play
   }]
