@@ -13,11 +13,11 @@ const toPlayIndex = (gameIndex: string, playNumber: number): string => {
   return playIndex
 }
 
-const toDynamoPlays = (gameIndex: string, plays: Array<{ playerId: number }>): Array<DynamoPlay> => {
+const toDynamoPlays = (gameIndex: string, plays: Array<{ batterId: number }>): Array<DynamoPlay> => {
   const dynamoPlays: Array<DynamoPlay> = plays.map((play, playNumber) => {
-  const { playerId: player_id } = play
+  const { batterId: batter_id } = play
   const play_index = toPlayIndex(gameIndex, playNumber)
-    return { player_id, play_index, play }
+    return { batter_id, play_index, play }
   })
   return dynamoPlays
 }

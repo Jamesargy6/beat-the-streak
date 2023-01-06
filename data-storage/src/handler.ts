@@ -5,7 +5,7 @@ import { toGameIndex, toDynamoPlays } from './dynamoDB/transform'
 type WritePlaysToDynamoInput = {
   date: string,
   gameNumber: number,
-  plays: Array<{ playerId: number }>
+  plays: Array<{ batterId: number }>
 }
 const writePlaysToDynamo = async (event: WritePlaysToDynamoInput) => {
   const dynamoClient = makeDynamoClient(AWS_REGION)
