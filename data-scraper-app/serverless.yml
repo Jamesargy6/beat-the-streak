@@ -40,7 +40,7 @@ stepFunctions:
           ScrapeDataForAllGames:
             Type: Map
             Parameters:
-              $: $$.Map.Item.Value
+              .$: $$.Map.Item.Value
             Iterator:
               StartAt: GetPlays
               States:
