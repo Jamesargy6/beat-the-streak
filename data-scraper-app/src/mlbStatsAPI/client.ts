@@ -6,11 +6,11 @@ class MLBStatsAPIClient {
         this._client = client
     }
 
-    async getRegularSeasonSchedule(year: number): Promise<Schedule> {
+    async getRegularSeasonGames(startDate: string, endDate: string): Promise<Schedule> {
       const params = {
         sportId: SportID.MLB,
-        startDate: `${year}-01-01`,
-        endDate: `${year}-12-31`,
+        startDate,
+        endDate,
         gameType: GameType.RegularSeason
       }
       const response = await this._client.getSchedule({ params })

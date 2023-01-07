@@ -4,7 +4,7 @@ import { PlayByPlay, Schedule } from 'mlb-stats-api'
 import { MLBStatsAPIClient } from './client'
 
 type MLBStatsAPIClientInterface = {
-  getRegularSeasonSchedule(year: number): Promise<Schedule>
+  getRegularSeasonGames(startDate: string, endDate: string): Promise<Schedule>
   getPlayByPlay(gamePk: number): Promise<PlayByPlay>
 }
 
