@@ -14,11 +14,11 @@ beforeEach(() => {
 
 describe('getGames', () => {
   const testSchedule: Schedule = { dates: [] }
-  const mockGetRegularSeasonSchedule = jest.fn(async (_: number) => testSchedule)
+  const mockGetRegularSeasonGames = jest.fn(async (_: string, __: string) => testSchedule)
   const testGames = [{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }]
   const mockToGames = jest.fn((_: Schedule) => testGames)
 
-  const mockMLBStatsAPIClient = { getRegularSeasonSchedule: mockGetRegularSeasonSchedule, getPlayByPlay: jest.fn() }
+  const mockMLBStatsAPIClient = { getRegularSeasonGames: mockGetRegularSeasonGames, getPlayByPlay: jest.fn() }
 
   let getGamePksFromScheduleSpy
   beforeEach(() => {
@@ -27,9 +27,10 @@ describe('getGames', () => {
   })
 
   test('wiring', async () => {
-    const year = 2022
-    const result = await getGames({ year })
-    expect(mockMLBStatsAPIClient.getRegularSeasonSchedule).toHaveBeenCalledWith(year)
+    const startDate = '2022-04-01'
+    const endDate = '2022-04-01'
+    const result = await getGames({ startDate, endDate })
+    expect(mockMLBStatsAPIClient.getRegularSeasonGames).toHaveBeenCalledWith(startDate, endDate)
     expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
     expect(result).toBe(testGames)
   })
@@ -69,7 +70,7 @@ describe('getPlays', () => {
   }
   const mockToPlay = jest.fn((_: APIPlay) => testPlay)
 
-  const mockMLBStatsAPIClient = { getRegularSeasonSchedule: jest.fn(), getPlayByPlay: mockGetPlayByPlay }
+  const mockMLBStatsAPIClient = { getRegularSeasonGames: jest.fn(), getPlayByPlay: mockGetPlayByPlay }
 
   let toPlaySpy
   beforeEach(() => {

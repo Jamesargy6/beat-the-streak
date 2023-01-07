@@ -2,10 +2,10 @@ import { toGames, toPlay } from './mlbStatsAPI/transform'
 import { makeMLBStatsAPIClient } from './mlbStatsAPI/client.factory'
 import { Game, Play } from './mlbStatsAPI/types'
 
-type GetGameDatesInput = { year: number }
-const getGames = async ({ year }: GetGameDatesInput): Promise<Array<Game>> => {
+type GetGamesInput = { startDate: string, endDate: string }
+const getGames = async ({ startDate, endDate }: GetGamesInput): Promise<Array<Game>> => {
   const mlbStatsAPIClient = makeMLBStatsAPIClient()
-    const schedule = await mlbStatsAPIClient.getRegularSeasonSchedule(year)
+    const schedule = await mlbStatsAPIClient.getRegularSeasonGames(startDate, endDate)
     const games = toGames(schedule)
     return games
 }

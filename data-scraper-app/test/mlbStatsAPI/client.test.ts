@@ -21,17 +21,18 @@ describe('MLBStatsAPIClient', () => {
   })
 
   describe('getRegularSeasonScheduleByYear', () => {
-    const testYear = 2022
+    const startDate = '2022-01-31'
+    const endDate = '2022-12-31'
     const expectedParams = {
       sportId: SportID.MLB,
-      startDate: `${testYear}-01-01`,
-      endDate: `${testYear}-12-31`,
+      startDate,
+      endDate,
       gameType: GameType.RegularSeason
     }
     
     test('happy path', async () => {
       const thing = getThing()
-      const result = await thing.getRegularSeasonSchedule(testYear)
+      const result = await thing.getRegularSeasonGames(startDate, endDate)
       expect(mockGetSchedule).toHaveBeenCalledWith({ params: expectedParams })
       expect(result).toBe(testSchedule)
     })
