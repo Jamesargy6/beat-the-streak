@@ -2,24 +2,21 @@ import { DynamoPlay } from './types'
 
 const PLAY_NUMBER_FORMAT_LENGTH = 3
 
-const toGameIndex = (date: string, gameNumber: number): string => {
-  const gameIndex = `${date}:${gameNumber}`
-  return gameIndex
-}
+const toGameIndex = (date: string, gameNumber: number): string => `${date}:${gameNumber}`
+
+const toTxBatterId = (transactionId: string, batterId: number): string => `${transactionId}:${batterId}`
 
 const toPlayIndex = (gameIndex: string, playNumber: number): string => {
   const formattedPlayNumber = String(playNumber).padStart(PLAY_NUMBER_FORMAT_LENGTH, '0')
-  const playIndex = `${gameIndex}:${formattedPlayNumber}`
-  return playIndex
+  return `${gameIndex}:${formattedPlayNumber}`
 }
 
-const toDynamoPlays = (gameIndex: string, plays: Array<{ batterId: number }>): Array<DynamoPlay> => {
-  const dynamoPlays: Array<DynamoPlay> = plays.map((play, playNumber) => {
-  const { batterId: batter_id } = play
+const toDynamoPlays = (transactionId: string, gameIndex: string, plays: Array<{ batterId: number }>): Array<DynamoPlay> =>
+  plays.map((play, playNumber) => {
+  const { batterId } = play
   const play_index = toPlayIndex(gameIndex, playNumber)
-    return { batter_id, play_index, play }
+    const transactionBatterId = toTxBatterId(transactionId, batterId)
+    return { tx_id: transactionId, tx_batter_id: transactionBatterId, play_index, play }
   })
-  return dynamoPlays
-}
 
 export { toGameIndex, toDynamoPlays }

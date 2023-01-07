@@ -59,6 +59,8 @@ stepFunctions:
                         Next: WritePlaysToDynamo
                       WritePlaysToDynamo:
                         Type: Task
+                        Parameters:
+                          executionId.$: $$.Execution.Id
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
                         End: true
                   - StartAt: GetGameDetails
