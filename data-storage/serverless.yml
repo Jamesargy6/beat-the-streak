@@ -47,6 +47,8 @@ resources:
                 KeyType: HASH
               - AttributeName: play_index
                 KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
