@@ -1,6 +1,6 @@
-import { Play as APIPlay, LeftRightCode, BoxScoreInfoLabel, BoxScore } from 'mlb-stats-api'
+import { Play as APIPlay, LeftRightCode, BoxScoreInfoLabel } from 'mlb-stats-api'
 import { toGames, toPlay, toGameDetails } from '../../src/mlbStatsAPI/transform'
-import { Play, GameDetails } from '../../src/mlbStatsAPI/types'
+import { Play } from '../../src/mlbStatsAPI/types'
 
 describe('toGames', () => {
   test.each`
@@ -65,7 +65,7 @@ describe('toPlay', () => {
 })
 
 describe('toGameDetails', () => {
-  let testBoxScore, expectedGameDetails
+  let testBoxScore, expectedGameDetails, testContextMetrics
   beforeEach(() => {
     testBoxScore = {
       teams: {
@@ -99,16 +99,30 @@ describe('toGameDetails', () => {
           }
       ]
     }
+    testContextMetrics = {
+      game: {
+        teams: {
+          away: {
+            probablePitcher: { id: 669456 }
+          },
+          home: {
+            probablePitcher: { id: 425844 }
+          }
+        }
+      }
+    }
     expectedGameDetails = {
       venueId: 7,
       awayBattingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
+      awayProbablePitcher: 669456,
       homeBattingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032],
+      homeProbablePitcher: 425844,
       weather: '47 degrees, Cloudy.',
       wind: '16 mph, L To R.'
     }
   })
   test('BoxScore to GameDetails', () => {
-    const result = toGameDetails(testBoxScore)
+    const result = toGameDetails(testBoxScore, testContextMetrics)
     expect(result).toEqual(expectedGameDetails)
   })
 
@@ -116,7 +130,7 @@ describe('toGameDetails', () => {
     testBoxScore.info = []
     expectedGameDetails.weather = ''
     expectedGameDetails.wind = ''
-    const result = toGameDetails(testBoxScore)
+    const result = toGameDetails(testBoxScore, testContextMetrics)
     expect(result).toEqual(expectedGameDetails)
   })
 })

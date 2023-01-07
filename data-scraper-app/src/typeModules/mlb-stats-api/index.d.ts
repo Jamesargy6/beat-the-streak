@@ -74,6 +74,25 @@ declare module 'mlb-stats-api' {
     info: Array<BoxScoreInfo>
   }
 
+  type ContextMetricsProbablePitcher = {
+    id: number
+  }
+
+  type ContextMetricsTeam = {
+    probablePitcher: ContextMetricsProbablePitcher
+  }
+
+  type ContextMetricsGame = {
+    teams: {
+      away: ContextMetricsTeam,
+      home: ContextMetricsTeam,
+    }
+  }
+
+  export type ContextMetrics = {
+    game: ContextMetricsGame
+  }
+
   export type GetScheduleParams = {
     params: {
       sportId: SportID,
@@ -94,9 +113,14 @@ declare module 'mlb-stats-api' {
   }
   export type GetGameBoxscoreResponse = { data: BoxScore }
 
+  export type GetGameContextMetricsParams = {
+    pathParams: { gamePk: number }
+  }
+  export type GetGameContextMetricsResponse = { data: ContextMetrics }
   export default class MLBStatsAPI {
      getSchedule(params: GetScheduleParams): Promise<GetScheduleResponse>
      getGamePlayByPlay(params: GetPlayByPlayParams): Promise<GetGamePlayByPlayResponse>
      getGameBoxscore(params: GetGameBoxscoreParams): Promise<GetGameBoxscoreResponse>
+     getGameContextMetrics(params: GetGameContextMetricsParams): Promise<GetGameContextMetricsResponse>
   }
 }
