@@ -1,5 +1,5 @@
 
-import { BoxScore, Play as APIPlay, Schedule, BoxScoreInfoLabel } from 'mlb-stats-api'
+import { BoxScore, Play as APIPlay, Schedule, BoxScoreInfoLabel, ContextMetrics } from 'mlb-stats-api'
 import { Play, Game, GameDetails } from './types'
 
 const toGames = (schedule: Schedule): Array<Game> => {
@@ -25,17 +25,31 @@ const toPlay = (play: APIPlay): Play => {
   }
 }
 
-const toGameDetails = (boxscore: BoxScore): GameDetails => {
-  const { teams, info } = boxscore
-  const { away, home } = teams
-  const { team: homeTeam, battingOrder: homeBattingOrder } = home
-  const venueId = homeTeam.venue.id
-  const { battingOrder: awayBattingOrder } = away
+const toGameDetails = (boxscore: BoxScore, contextMetrics: ContextMetrics): GameDetails => {
+  const { teams: boxScoreTeams, info } = boxscore
+  const { away: boxScoreAway, home: boxScoreHome } = boxScoreTeams
+  const { team: boxScoreHomeTeam, battingOrder: homeBattingOrder } = boxScoreHome
+  const venueId = boxScoreHomeTeam.venue.id
+  const { battingOrder: awayBattingOrder } = boxScoreAway
   const weatherInfo = info.find(item => item.label == BoxScoreInfoLabel.Weather) || { value: '' }
   const { value: weather } = weatherInfo
   const windInfo = info.find(item => item.label == BoxScoreInfoLabel.Wind) || { value: '' }
   const { value: wind } = windInfo
-  return { venueId, awayBattingOrder, homeBattingOrder, weather, wind }
+
+  const { game } = contextMetrics
+  const { teams: contextMetricsTeams } = game
+  const { away: contextMetricsAway, home: contextMetricsHome } = contextMetricsTeams
+  const awayProbablePitcher = contextMetricsAway.probablePitcher.id
+  const homeProbablePitcher = contextMetricsHome.probablePitcher.id
+  return { 
+    venueId,
+    awayBattingOrder,
+    awayProbablePitcher,
+    homeBattingOrder,
+    homeProbablePitcher,
+    weather,
+    wind,
+  }
 }
 
 export { toGames, toPlay, toGameDetails }

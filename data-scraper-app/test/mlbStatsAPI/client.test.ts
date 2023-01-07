@@ -1,4 +1,4 @@
-import { BoxScore, GameType, PlayByPlay, Schedule, SportID, BoxScoreInfoLabel } from 'mlb-stats-api'
+import { BoxScore, GameType, PlayByPlay, Schedule, SportID, BoxScoreInfoLabel, ContextMetrics } from 'mlb-stats-api'
 import { MLBStatsAPIClient } from '../../src/mlbStatsAPI/client'
 
 describe('MLBStatsAPIClient', () => {
@@ -35,18 +35,32 @@ describe('MLBStatsAPIClient', () => {
             value: '16 mph, L To R.'
         }
     ]
-}
+  }
+  const testContextMetrics: ContextMetrics = {
+    game: {
+      teams: {
+        away: {
+          probablePitcher: { id: 669456 }
+        },
+        home: {
+          probablePitcher: { id: 425844 }
+        }
+      }
+    }
+  }
     
-  let mockGetSchedule, mockGetGamePlayByPlay, mockGetGameBoxscore, mockClient
+  let mockGetSchedule, mockGetGamePlayByPlay, mockGetGameBoxscore, mockGetGameContextMetrics, mockClient
   beforeEach(() => {
     jest.resetAllMocks()
     mockGetSchedule = jest.fn(async (_) => ({ data: testSchedule }))
     mockGetGamePlayByPlay = jest.fn(async (_) => ({ data: testPlayByPlay }))
     mockGetGameBoxscore = jest.fn(async (_) => ({ data: testBoxScore }))
+    mockGetGameContextMetrics = jest.fn(async (_) => ({ data: testContextMetrics }))
     mockClient = { 
       getSchedule: mockGetSchedule,
       getGamePlayByPlay: mockGetGamePlayByPlay,
-      getGameBoxscore: mockGetGameBoxscore
+      getGameBoxscore: mockGetGameBoxscore,
+      getGameContextMetrics: mockGetGameContextMetrics
     }
   })
 
@@ -100,6 +114,20 @@ describe('MLBStatsAPIClient', () => {
       const result = await thing.getBoxScore(testGamePk)
       expect(mockGetGameBoxscore).toHaveBeenCalledWith({ pathParams: expectedPathParams })
       expect(result).toBe(testBoxScore)
+    })
+  })
+
+  describe('getContextMetrics', () => {
+    const testGamePk = 662766
+    const expectedPathParams = {
+      gamePk: testGamePk
+    }
+    
+    test('happy path', async () => {
+      const thing = getThing()
+      const result = await thing.getContextMetrics(testGamePk)
+      expect(mockGetGameContextMetrics).toHaveBeenCalledWith({ pathParams: expectedPathParams })
+      expect(result).toBe(testContextMetrics)
     })
   })
 })

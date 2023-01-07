@@ -8,22 +8,32 @@ import { Play, GameDetails } from '../src/mlbStatsAPI/types'
 jest.mock('../src/mlbStatsAPI/client')
 jest.mock('../src/mlbStatsAPI/transform')
 
+let mockGetRegularSeasonGames, mockGetPlayByPlay, mockGetBoxScore, mockGetContextMetrics, mockMLBStatsAPIClient
 beforeEach(() => {
+  mockGetRegularSeasonGames = jest.fn()
+  mockGetPlayByPlay = jest.fn()
+  mockGetBoxScore = jest.fn()
+  mockGetContextMetrics = jest.fn()
   jest.clearAllMocks()
 })
 
 describe('getGames', () => {
   const testSchedule: Schedule = { dates: [] }
-  const mockGetRegularSeasonGames = jest.fn(async (_: string, __: string) => testSchedule)
+  
   const testGames = [{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }]
   const mockToGames = jest.fn((_: Schedule) => testGames)
 
-  const mockMLBStatsAPIClient = { getRegularSeasonGames: mockGetRegularSeasonGames, getPlayByPlay: jest.fn(), getBoxScore: jest.fn() }
-
   let getGamePksFromScheduleSpy
   beforeEach(() => {
-    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
+    mockGetRegularSeasonGames = jest.fn(async (_: string, __: string) => testSchedule)
     getGamePksFromScheduleSpy = jest.spyOn(transform, 'toGames').mockImplementation(mockToGames)
+    mockMLBStatsAPIClient = { 
+      getRegularSeasonGames: mockGetRegularSeasonGames,
+      getPlayByPlay: mockGetPlayByPlay,
+      getBoxScore: mockGetBoxScore,
+      getContextMetrics: mockGetContextMetrics
+    } 
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
   })
 
   test('wiring', async () => {
@@ -60,7 +70,7 @@ describe('getPlays', () => {
     }
   }
   const testPlayByPlay: PlayByPlay = { allPlays: [testAPIPlay] }
-  const mockGetPlayByPlay = jest.fn(async (_: number) => testPlayByPlay)
+  
   const testPlay: Play = { 
     batterId: 12345,
     batSide: LeftRightCode.Right,
@@ -70,12 +80,17 @@ describe('getPlays', () => {
   }
   const mockToPlay = jest.fn((_: APIPlay) => testPlay)
 
-  const mockMLBStatsAPIClient = { getRegularSeasonGames: jest.fn(), getPlayByPlay: mockGetPlayByPlay, getBoxScore: jest.fn() }
-
   let toPlaySpy
   beforeEach(() => {
-    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
+    mockGetPlayByPlay = jest.fn(async (_: number) => testPlayByPlay)
     toPlaySpy = jest.spyOn(transform, 'toPlay').mockImplementation(mockToPlay)
+    mockMLBStatsAPIClient = { 
+      getRegularSeasonGames: mockGetRegularSeasonGames,
+      getPlayByPlay: mockGetPlayByPlay,
+      getBoxScore: mockGetBoxScore,
+      getContextMetrics: mockGetContextMetrics
+    } 
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
   })
 
   const gamePk = 662766
@@ -127,30 +142,51 @@ describe('getGameDetails', () => {
             value: '16 mph, L To R.'
         }
     ]
-}
-  const mockGetBoxScore = jest.fn(async (_: number) => testBoxScore)
+  }
+  const testContextMetrics = {
+    game: {
+      teams: {
+        away: {
+          probablePitcher: { id: 669456 }
+        },
+        home: {
+          probablePitcher: { id: 425844 }
+        }
+      }
+    }
+  }
+
   const testGameDetails: GameDetails = {
     venueId: 7,
     awayBattingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
+    awayProbablePitcher: 669456,
     homeBattingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032],
+    homeProbablePitcher: 425844,
     weather: '47 degrees, Cloudy.',
     wind: '16 mph, L To R.'
   }
   const mockToGameDetails = jest.fn((_: BoxScore) => testGameDetails)
 
-  const mockMLBStatsAPIClient = { getRegularSeasonGames: jest.fn(), getPlayByPlay: jest.fn(), getBoxScore: mockGetBoxScore }
-
   let toGameDetailsSpy
   beforeEach(() => {
-    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
+    mockGetBoxScore = jest.fn(async (_: number) => testBoxScore)
+    mockGetContextMetrics = jest.fn(async (_: number) => testContextMetrics)
     toGameDetailsSpy = jest.spyOn(transform, 'toGameDetails').mockImplementation(mockToGameDetails)
+    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
+    mockMLBStatsAPIClient = { 
+      getRegularSeasonGames: mockGetRegularSeasonGames,
+      getPlayByPlay: mockGetPlayByPlay,
+      getBoxScore: mockGetBoxScore,
+      getContextMetrics: mockGetContextMetrics
+    } 
   })
 
   const gamePk = 662766
   test('wiring', async () => {
     const result = await getGameDetails({ gamePk })
     expect(mockMLBStatsAPIClient.getBoxScore).toHaveBeenCalledWith(662766)
-    expect(toGameDetailsSpy).toHaveBeenCalledWith(testBoxScore)
+    expect(mockMLBStatsAPIClient.getContextMetrics).toHaveBeenCalledWith(662766)
+    expect(toGameDetailsSpy).toHaveBeenCalledWith(testBoxScore, testContextMetrics)
     expect(result).toEqual(testGameDetails)
   })
 })

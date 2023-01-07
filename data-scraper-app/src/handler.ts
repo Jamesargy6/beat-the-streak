@@ -23,8 +23,10 @@ const getPlays = async ({ gamePk }: GetPlaysInput): Promise<Array<Play>> => {
 type GetGameDetails = { gamePk: number }
 const getGameDetails = async ({ gamePk }: GetGameDetails): Promise<GameDetails> => {
   const mlbStatsAPIClient = makeMLBStatsAPIClient()
-  const boxScore = await mlbStatsAPIClient.getBoxScore(gamePk)
-  const gameDetails = toGameDetails(boxScore)
+  const boxScorePromise = mlbStatsAPIClient.getBoxScore(gamePk)
+  const contextMetricsPromise = mlbStatsAPIClient.getContextMetrics(gamePk)
+  const [boxScore, contextMetrics] = await Promise.all([boxScorePromise, contextMetricsPromise])
+  const gameDetails = toGameDetails(boxScore, contextMetrics)
   return gameDetails
 }
 
