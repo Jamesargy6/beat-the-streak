@@ -14,7 +14,7 @@ describe('writePlaysToDynamo', () => {
   const mockToGameIndex = jest.fn(() => testGameIndex)
   const testDynamoPlay = {  batter_id: 12345, play_index: '2022-04-01:1:000', play: { } }
   const mockToDynamoPlays = jest.fn(() => [testDynamoPlay])
-  const mockDynamoClient = { writePlays: jest.fn() }
+  const mockDynamoClient = { batchWrite: jest.fn() }
 
   let toGameIndexSpy, toDynamoPlaysSpy
   beforeEach(() => {
@@ -32,6 +32,6 @@ describe('writePlaysToDynamo', () => {
     await writePlaysToDynamo(input)
     expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gameNumber)
     expect(toDynamoPlaysSpy).toHaveBeenCalledWith(testGameIndex, input.plays  )
-    expect(mockDynamoClient.writePlays).toHaveBeenLastCalledWith([testDynamoPlay])
+    expect(mockDynamoClient.batchWrite).toHaveBeenLastCalledWith([testDynamoPlay])
   })
 })
