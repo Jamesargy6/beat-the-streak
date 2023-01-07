@@ -11,15 +11,17 @@ ${'2022-04-01'} | ${2}        | ${'2022-04-01:2'}
 })
 
 test('toDynamoPlays transforms input into DynamoPlay', () =>{
+  const transactionId = 'testTransactionId'
   const gameIndex = '2022-04-01:1'
   const play = { batterId: 12345 }
 
   const expectedResult = [{
-    batter_id: play.batterId,
-    play_index: '2022-04-01:1:000',
+    tx_id: transactionId,
+    tx_batter_id: `${transactionId}:${play.batterId}`,
+    play_index: `${gameIndex}:000`,
     play
   }]
 
-  const result = toDynamoPlays(gameIndex, [play])
+  const result = toDynamoPlays(transactionId, gameIndex, [play])
   expect(result).toEqual(expectedResult)
 })
