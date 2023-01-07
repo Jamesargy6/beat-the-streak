@@ -1,6 +1,6 @@
-import { Play as APIPlay, LeftRightCode } from 'mlb-stats-api'
-import { toGames, toPlay } from '../../src/mlbStatsAPI/transform'
-import { Play } from '../../src/mlbStatsAPI/types'
+import { Play as APIPlay, LeftRightCode, BoxScoreInfoLabel, BoxScore } from 'mlb-stats-api'
+import { toGames, toPlay, toGameDetails } from '../../src/mlbStatsAPI/transform'
+import { Play, GameDetails } from '../../src/mlbStatsAPI/types'
 
 describe('toGames', () => {
   test.each`
@@ -61,5 +61,62 @@ describe('toPlay', () => {
   test('APIPlay to Play', () => {
     const result = toPlay(apiPlay)
     expect(result).toEqual(expectedPlay)
+  })
+})
+
+describe('toGameDetails', () => {
+  let testBoxScore, expectedGameDetails
+  beforeEach(() => {
+    testBoxScore = {
+      teams: {
+          away: {
+              team: {
+                  venue: {
+                      id: 5
+                  },
+              },
+              battingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
+             
+          },
+          home: {
+              team: {
+                  venue: {
+                      id: 7
+                  },
+              },
+              battingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032]
+          }
+      },
+      info: [
+         
+          {
+              label: BoxScoreInfoLabel.Weather,
+              value: '47 degrees, Cloudy.'
+          },
+          {
+              label:  BoxScoreInfoLabel.Wind,
+              value: '16 mph, L To R.'
+          }
+      ]
+    }
+    expectedGameDetails = {
+      venueId: 7,
+      awayBattingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
+      homeBattingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032],
+      weather: '47 degrees, Cloudy.',
+      wind: '16 mph, L To R.'
+    }
+  })
+  test('BoxScore to GameDetails', () => {
+    const result = toGameDetails(testBoxScore)
+    expect(result).toEqual(expectedGameDetails)
+  })
+
+  test('BoxScore to GameDetails with no BoxScoreInfo', () => {
+    testBoxScore.info = []
+    expectedGameDetails.weather = ''
+    expectedGameDetails.wind = ''
+    const result = toGameDetails(testBoxScore)
+    expect(result).toEqual(expectedGameDetails)
   })
 })

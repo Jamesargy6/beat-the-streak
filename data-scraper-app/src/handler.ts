@@ -1,6 +1,6 @@
-import { toGames, toPlay } from './mlbStatsAPI/transform'
+import { toGames, toPlay, toGameDetails } from './mlbStatsAPI/transform'
 import { makeMLBStatsAPIClient } from './mlbStatsAPI/client.factory'
-import { Game, Play } from './mlbStatsAPI/types'
+import { Game, Play, GameDetails } from './mlbStatsAPI/types'
 
 type GetGamesInput = { startDate: string, endDate: string }
 const getGames = async ({ startDate, endDate }: GetGamesInput): Promise<Array<Game>> => {
@@ -20,4 +20,12 @@ const getPlays = async ({ gamePk }: GetPlaysInput): Promise<Array<Play>> => {
   return allPlays
 }
 
-export { getGames, getPlays }
+type GetGameDetails = { gamePk: number }
+const getGameDetails = async ({ gamePk }: GetGameDetails): Promise<GameDetails> => {
+  const mlbStatsAPIClient = makeMLBStatsAPIClient()
+  const boxScore = await mlbStatsAPIClient.getBoxScore(gamePk)
+  const gameDetails = toGameDetails(boxScore)
+  return gameDetails
+}
+
+export { getGames, getPlays, getGameDetails }
