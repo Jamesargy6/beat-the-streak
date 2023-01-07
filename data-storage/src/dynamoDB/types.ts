@@ -1,7 +1,6 @@
 type DynamoPlay = {
   batter_id: number,
-  play_index: string,
-  play: object
+  play_index: string
 }
 
 export { DynamoPlay }
