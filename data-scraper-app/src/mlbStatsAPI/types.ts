@@ -13,3 +13,11 @@ export type Game = {
   date: string,
   gameNumber: number
 }
+
+export type GameDetails = {
+  venueId: number,
+  awayBattingOrder: Array<number>,
+  homeBattingOrder: Array<number>,
+  weather: string,
+  wind: string
+}

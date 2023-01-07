@@ -46,6 +46,34 @@ declare module 'mlb-stats-api' {
     allPlays: Array<Play>
   }
 
+  type Venue = {
+    id: number
+  }
+  type BoxScoreTeamGeneralInfo = {
+    venue: Venue
+  }
+  type BoxScoreTeam = {
+    team: BoxScoreTeamGeneralInfo,
+    battingOrder: Array<number>
+  }
+
+  export const enum BoxScoreInfoLabel {
+    Weather = 'Weather',
+    Wind = 'Wind'
+  }
+
+  type BoxScoreInfo = {
+    label: BoxScoreInfoLabel,
+    value: string
+  }
+  export type BoxScore = {
+    teams: {
+      away: BoxScoreTeam,
+      home: BoxScoreTeam,
+    }
+    info: Array<BoxScoreInfo>
+  }
+
   export type GetScheduleParams = {
     params: {
       sportId: SportID,
@@ -61,8 +89,14 @@ declare module 'mlb-stats-api' {
   }
   export type GetGamePlayByPlayResponse = { data: PlayByPlay }
 
+  export type GetGameBoxscoreParams = {
+    pathParams: { gamePk: number }
+  }
+  export type GetGameBoxscoreResponse = { data: BoxScore }
+
   export default class MLBStatsAPI {
      getSchedule(params: GetScheduleParams): Promise<GetScheduleResponse>
      getGamePlayByPlay(params: GetPlayByPlayParams): Promise<GetGamePlayByPlayResponse>
+     getGameBoxscore(params: GetGameBoxscoreParams): Promise<GetGameBoxscoreResponse>
   }
 }

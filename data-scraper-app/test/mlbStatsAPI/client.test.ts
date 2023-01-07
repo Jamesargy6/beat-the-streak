@@ -1,16 +1,53 @@
-import { GameType, PlayByPlay, Schedule, SportID } from 'mlb-stats-api'
+import { BoxScore, GameType, PlayByPlay, Schedule, SportID, BoxScoreInfoLabel } from 'mlb-stats-api'
 import { MLBStatsAPIClient } from '../../src/mlbStatsAPI/client'
 
 describe('MLBStatsAPIClient', () => {
   const testSchedule: Schedule = { dates: [] }
   const testPlayByPlay: PlayByPlay = { allPlays: [] }
+  const testBoxScore: BoxScore = {
+    teams: {
+        away: {
+            team: {
+                venue: {
+                    id: 5
+                },
+            },
+            battingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
+           
+        },
+        home: {
+            team: {
+                venue: {
+                    id: 7
+                },
+            },
+            battingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032]
+        }
+    },
+    info: [
+       
+        {
+            label: BoxScoreInfoLabel.Weather,
+            value: '47 degrees, Cloudy.'
+        },
+        {
+            label:  BoxScoreInfoLabel.Wind,
+            value: '16 mph, L To R.'
+        }
+    ]
+}
     
-  let mockGetSchedule, mockGetGamePlayByPlay, mockClient
+  let mockGetSchedule, mockGetGamePlayByPlay, mockGetGameBoxscore, mockClient
   beforeEach(() => {
     jest.resetAllMocks()
     mockGetSchedule = jest.fn(async (_) => ({ data: testSchedule }))
     mockGetGamePlayByPlay = jest.fn(async (_) => ({ data: testPlayByPlay }))
-    mockClient = { getSchedule: mockGetSchedule, getGamePlayByPlay: mockGetGamePlayByPlay }
+    mockGetGameBoxscore = jest.fn(async (_) => ({ data: testBoxScore }))
+    mockClient = { 
+      getSchedule: mockGetSchedule,
+      getGamePlayByPlay: mockGetGamePlayByPlay,
+      getGameBoxscore: mockGetGameBoxscore
+    }
   })
 
   const getThing = () => new MLBStatsAPIClient(mockClient)
@@ -49,6 +86,20 @@ describe('MLBStatsAPIClient', () => {
       const result = await thing.getPlayByPlay(testGamePk)
       expect(mockGetGamePlayByPlay).toHaveBeenCalledWith({ pathParams: expectedPathParams })
       expect(result).toBe(testPlayByPlay)
+    })
+  })
+
+  describe('getBoxScore', () => {
+    const testGamePk = 662766
+    const expectedPathParams = {
+      gamePk: testGamePk
+    }
+    
+    test('happy path', async () => {
+      const thing = getThing()
+      const result = await thing.getBoxScore(testGamePk)
+      expect(mockGetGameBoxscore).toHaveBeenCalledWith({ pathParams: expectedPathParams })
+      expect(result).toBe(testBoxScore)
     })
   })
 })

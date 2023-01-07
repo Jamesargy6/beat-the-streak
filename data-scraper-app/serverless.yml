@@ -19,6 +19,9 @@ functions:
   
   getPlays:
     handler: src/handler.getPlays
+  
+  getGameDetails:
+    handler: src/handler.getGameDetails
 
 stepFunctions:
   stateMachines:

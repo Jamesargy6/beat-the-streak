@@ -1,5 +1,5 @@
 import MLBStatsAPI from 'mlb-stats-api'
-import { GameType, PlayByPlay, Schedule, SportID } from 'mlb-stats-api'
+import { GameType, PlayByPlay, Schedule, SportID, BoxScore } from 'mlb-stats-api'
 class MLBStatsAPIClient {
     _client: MLBStatsAPI
     constructor (client: MLBStatsAPI) {
@@ -20,6 +20,12 @@ class MLBStatsAPIClient {
     async getPlayByPlay(gamePk: number): Promise<PlayByPlay> {
       const pathParams = { gamePk }
       const response = await this._client.getGamePlayByPlay({ pathParams })
+      return response.data
+    }
+
+    async getBoxScore(gamePk: number): Promise<BoxScore> {
+      const pathParams = { gamePk }
+      const response = await this._client.getGameBoxscore({ pathParams })
       return response.data
     }
 }
