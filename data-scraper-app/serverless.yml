@@ -43,17 +43,33 @@ stepFunctions:
           ScrapeDataForAllGames:
             Type: Map
             Iterator:
-              StartAt: GetPlays
+              StartAt: ScrapeGameDetails
               States:
-                GetPlays:
-                  Type: Task
-                  Resource:
-                    Fn::GetAtt: [getPlays, Arn]
-                  ResultPath: $.plays
-                  Next: WritePlaysToDynamo
-                WritePlaysToDynamo:
-                  Type: Task
-                  Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
+                ScrapeGameDetails:
+                  Type: Parallel
+                  Next: FinalState
+                  Branches:
+                  - StartAt: GetPlays
+                    States:
+                      GetPlays:
+                        Type: Task
+                        Resource:
+                          Fn::GetAtt: [getPlays, Arn]
+                        ResultPath: $.plays
+                        Next: WritePlaysToDynamo
+                      WritePlaysToDynamo:
+                        Type: Task
+                        Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
+                        End: true
+                  - StartAt: GetGameDetails
+                    States:
+                      GetGameDetails:
+                        Type: Task
+                        Resource:
+                          Fn::GetAtt: [getGameDetails, Arn]
+                        End: true
+                FinalState:
+                  Type: Pass
                   End: true
             ResultPath: null
             End: true
