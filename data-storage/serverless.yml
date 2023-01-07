@@ -44,7 +44,7 @@ resources:
           - IndexName: tx_id
             KeySchema:
               - AttributeName: tx_batter_id
-              KeyType: HASH
+                KeyType: HASH
               - AttributeName: play_index
                 KeyType: RANGE
         ProvisionedThroughput:
