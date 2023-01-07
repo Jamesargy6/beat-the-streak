@@ -49,6 +49,9 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 10
+              WriteCapacityUnits: 10
         ProvisionedThroughput:
-          ReadCapacityUnits: 10
+          ReadCapacityUnits: 1
           WriteCapacityUnits: 10
