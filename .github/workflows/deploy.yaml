@@ -27,23 +27,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: './data-storage/.nvmrc'
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            data-storage:
-              - 'data-storage/**'  
 
       - name: Install sls
-        if: steps.filter.outputs.data-storage == 'true'
         run: npm install -g serverless
 
       - name: Install packages
-        if: steps.filter.outputs.data-storage == 'true'
         run: npm ci
       
       - name: Configure AWS credentials
-        if: steps.filter.outputs.data-storage == 'true'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::104843235006:role/github-access-role
@@ -51,7 +42,6 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to dev
-        if: steps.filter.outputs.data-storage == 'true'
         run: sls deploy --stage dev --region ${{ env.AWS_REGION }} --force
 
   data-scraper-app-deploy:
@@ -71,23 +61,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version-file: './data-scraper-app/.nvmrc'
-      - uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          filters: |
-            data-scraper-app:
-              - 'data-scraper-app/**'  
 
       - name: Install sls
-        if: steps.filter.outputs.data-scraper-app == 'true'
         run: npm install -g serverless
 
       - name: Install packages
-        if: steps.filter.outputs.data-scraper-app == 'true'
         run: npm ci
       
       - name: Configure AWS credentials
-        if: steps.filter.outputs.data-scraper-app == 'true'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: arn:aws:iam::104843235006:role/github-access-role
@@ -95,5 +76,4 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to dev
-        if: steps.filter.outputs.data-scraper-app == 'true'
         run: sls deploy --stage dev --region ${{ env.AWS_REGION }} --force
