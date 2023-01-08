@@ -22,14 +22,14 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts_play"
+        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
 
 resources:
   Resources:
     playTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts_play
+        TableName: bts-play
         AttributeDefinitions:
           - AttributeName: tx_id
             AttributeType: S
@@ -41,7 +41,7 @@ resources:
           - AttributeName: tx_id
             KeyType: HASH
         GlobalSecondaryIndexes:
-          - IndexName: tx_id
+          - IndexName: tx_batter_id
             KeySchema:
               - AttributeName: tx_batter_id
                 KeyType: HASH
