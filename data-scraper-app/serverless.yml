@@ -60,7 +60,10 @@ stepFunctions:
                       WritePlaysToDynamo:
                         Type: Task
                         Parameters:
-                          executionId.$: $$.Execution.Id
+                          transactionId.$: $$.Execution.Id
+                          date.$: $.date
+                          gameNumber.$: $.gameNumber
+                          plays.$: $.plays
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
                         End: true
                   - StartAt: GetGameDetails
