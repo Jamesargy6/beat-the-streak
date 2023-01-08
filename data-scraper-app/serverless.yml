@@ -62,7 +62,7 @@ stepFunctions:
                         Parameters:
                           transactionId.$: $$.Execution.Id
                           date.$: $.date
-                          gameNumber.$: $.gameNumber
+                          gamePk.$: $.gamePk
                           plays.$: $.plays
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
                         End: true

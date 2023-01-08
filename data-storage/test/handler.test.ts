@@ -30,12 +30,12 @@ describe('writePlaysToDynamo', () => {
     const input = {
       transactionId: 'testTransactionId',
       date: '2022-04-01',
-      gameNumber: 1,
+      gamePk: 1,
       playNumber: 0,
       plays: [{ batterId: 12345 }]
     }
     await writePlaysToDynamo(input)
-    expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gameNumber)
+    expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gamePk)
     expect(toDynamoPlaysSpy).toHaveBeenCalledWith(input.transactionId, testGameIndex, input.plays  )
     expect(mockDynamoClient.batchWrite).toHaveBeenLastCalledWith([testDynamoPlay])
   })

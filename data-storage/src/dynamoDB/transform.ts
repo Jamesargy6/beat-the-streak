@@ -2,7 +2,7 @@ import { DynamoPlay } from './types'
 
 const PLAY_NUMBER_FORMAT_LENGTH = 3
 
-const toGameIndex = (date: string, gameNumber: number): string => `${date}:${gameNumber}`
+const toGameIndex = (date: string, gamePk: number): string => `${date}:${gamePk}`
 
 const toTxBatterId = (transactionId: string, batterId: number): string => `${transactionId}:${batterId}`
 
