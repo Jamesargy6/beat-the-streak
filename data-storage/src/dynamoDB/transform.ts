@@ -11,12 +11,12 @@ const toPlayIndex = (gameIndex: string, playNumber: number): string => {
   return `${gameIndex}:${formattedPlayNumber}`
 }
 
-const toDynamoPlays = (transactionId: string, gameIndex: string, plays: Array<{ batterId: number }>): Array<DynamoPlay> =>
+const toDynamoPlays = (transactionId: string, gameIndex: string, plays: Array<{ batterId: number }>, ttl: number): Array<DynamoPlay> =>
   plays.map((play, playNumber) => {
   const { batterId } = play
   const play_index = toPlayIndex(gameIndex, playNumber)
     const transactionBatterId = toTxBatterId(transactionId, batterId)
-    return { tx_id: transactionId, tx_batter_id: transactionBatterId, play_index, play }
+    return { tx_batter_id: transactionBatterId, play_index, play, ttl }
   })
 
 export { toGameIndex, toDynamoPlays }

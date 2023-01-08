@@ -22,38 +22,29 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts_play"
+        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
 
 resources:
   Resources:
     playTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts_play
+        TableName: bts-play
         AttributeDefinitions:
-          - AttributeName: tx_id
-            AttributeType: S
           - AttributeName: tx_batter_id
             AttributeType: S
           - AttributeName: play_index
             AttributeType: S
+          - AttributeName: ttl
+            AttributeType: N
         KeySchema:
-          - AttributeName: tx_id
+          - AttributeName: tx_batter_id
             KeyType: HASH
           - AttributeName: play_index
             KeyType: RANGE
-        GlobalSecondaryIndexes:
-          - IndexName: tx_batter_id
-            KeySchema:
-              - AttributeName: tx_batter_id
-                KeyType: HASH
-              - AttributeName: play_index
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-            ProvisionedThroughput:
-              ReadCapacityUnits: 10
-              WriteCapacityUnits: 10
         ProvisionedThroughput:
-          ReadCapacityUnits: 1
+          ReadCapacityUnits: 10
           WriteCapacityUnits: 10
+        TimeToLiveSpecification:
+          Enabled: True
+          AttributeName: ttl
