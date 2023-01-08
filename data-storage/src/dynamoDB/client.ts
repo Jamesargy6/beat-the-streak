@@ -1,8 +1,9 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
+import { DynamoBaseItemType } from './types'
 
 const MAX_CHUNK_SIZE = 25
 
-class DynamoClient<T> {
+class DynamoClient<T extends DynamoBaseItemType> {
   _client: DynamoDBDocument
   _tableName: string
   constructor(client: DynamoDBDocument, tableName: string) {
