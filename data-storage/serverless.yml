@@ -35,8 +35,6 @@ resources:
             AttributeType: S
           - AttributeName: play_index
             AttributeType: S
-          - AttributeName: ttl
-            AttributeType: N
         KeySchema:
           - AttributeName: tx_batter_id
             KeyType: HASH
