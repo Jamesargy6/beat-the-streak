@@ -17,6 +17,13 @@ class DynamoClient<T extends DynamoBaseItemType> {
       : [arr]
   }
 
+  async write(item: T) {
+    await this._client.put({ 
+      TableName: this._tableName,
+      Item: item
+    })
+  }
+
   async batchWrite (items: Array<T>) {
     const requests = items.map(item => ({ PutRequest: { Item: item } }))
     const requestChunks = this._chunkArray(requests, MAX_CHUNK_SIZE)

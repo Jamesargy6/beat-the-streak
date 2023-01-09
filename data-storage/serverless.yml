@@ -22,7 +22,16 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: "arn:aws:dynamodb:us-west-2:*:table/bts-play"
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-play
+  writeGameDetailToDynamo:
+    handler: src/handler.writeGameDetailToDynamo
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:PutItem
+          - dynamodb:BatchWriteItem
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game-detail
 
 resources:
   Resources:
@@ -39,6 +48,26 @@ resources:
           - AttributeName: tx_batter_id
             KeyType: HASH
           - AttributeName: play_index
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10
+        TimeToLiveSpecification:
+          Enabled: True
+          AttributeName: ttl
+    gameDetailTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: bts-game-detail
+        AttributeDefinitions:
+          - AttributeName: tx_id
+            AttributeType: S
+          - AttributeName: game_index
+            AttributeType: S
+        KeySchema:
+          - AttributeName: tx_id
+            KeyType: HASH
+          - AttributeName: game_index
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10

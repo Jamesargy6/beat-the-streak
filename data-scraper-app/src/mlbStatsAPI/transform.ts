@@ -1,6 +1,6 @@
 
 import { BoxScore, Play as APIPlay, Schedule, BoxScoreInfoLabel, ContextMetrics } from 'mlb-stats-api'
-import { Play, Game, GameDetails } from './types'
+import { Play, Game, GameDetail } from './types'
 
 const toGames = (schedule: Schedule): Array<Game> => {
   const games = schedule.dates.reduce((currentGameDates: Array<Game>, date) => {
@@ -25,7 +25,7 @@ const toPlay = (play: APIPlay): Play => {
   }
 }
 
-const toGameDetails = (boxscore: BoxScore, contextMetrics: ContextMetrics): GameDetails => {
+const toGameDetail = (boxscore: BoxScore, contextMetrics: ContextMetrics): GameDetail => {
   const { teams: boxScoreTeams, info } = boxscore
   const { away: boxScoreAway, home: boxScoreHome } = boxScoreTeams
   const { team: boxScoreHomeTeam, battingOrder: homeBattingOrder } = boxScoreHome
@@ -52,4 +52,4 @@ const toGameDetails = (boxscore: BoxScore, contextMetrics: ContextMetrics): Game
   }
 }
 
-export { toGames, toPlay, toGameDetails }
+export { toGames, toPlay, toGameDetail }
