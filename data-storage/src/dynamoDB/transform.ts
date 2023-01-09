@@ -1,4 +1,4 @@
-import { DynamoPlay } from './types'
+import { DynamoPlay, DynamoGameDetail } from './types'
 
 const PLAY_NUMBER_FORMAT_LENGTH = 3
 
@@ -19,4 +19,11 @@ const toDynamoPlays = (transactionId: string, gameIndex: string, plays: Array<{ 
     return { tx_batter_id: transactionBatterId, play_index, play, ttl }
   })
 
-export { toGameIndex, toDynamoPlays }
+const toDynamoGameDetail = (transactionId: string, gameIndex: string, gameDetail: object, ttl: number): DynamoGameDetail => ({ 
+  tx_id: transactionId, 
+  game_index: gameIndex, 
+  game_detail: gameDetail, 
+  ttl
+})
+
+export { toGameIndex, toDynamoPlays, toDynamoGameDetail }

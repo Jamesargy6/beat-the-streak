@@ -3,7 +3,7 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 import { makeDynamoClient } from '../../src/dynamoDB/client.factory'
 import { AWS_REGION } from '../../src/constants'
-import { DynamoPlay } from '../../src/dynamoDB/types'
+import { DynamoPlay, DynamoGameDetail } from '../../src/dynamoDB/types'
 
 jest.mock('@aws-sdk/client-dynamodb')
 jest.mock('@aws-sdk/lib-dynamodb')
@@ -18,10 +18,15 @@ describe('makeDynamoClient', () => {
     mockDynamoDBDocument = jest.fn()
   })
 
-  test('creates DynamoClient correctly', () => {
-    makeDynamoClient(DynamoPlay)
+  test.each`
+  dynamoItemClassName   | clientConstructor
+  ${'DynamoPlay'}       | ${DynamoPlay}
+  ${'DynamoGameDetail'} | ${DynamoGameDetail}
+  `('creates DynamoClient for $dynamoItemClassName correctly', ({ clientConstructor }) => {
+    makeDynamoClient(clientConstructor)
     const fromSpy = jest.spyOn(DynamoDBDocument, 'from').mockImplementation(() => mockDynamoDBDocument)
     expect(DynamoDBClient).toHaveBeenCalledWith({ region: AWS_REGION })
     expect(fromSpy).toHaveBeenCalledTimes(1)
   })
+
 })

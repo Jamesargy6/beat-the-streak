@@ -1,4 +1,4 @@
-import { toDynamoPlays, toGameIndex } from '../../src/dynamoDB/transform'
+import { toDynamoPlays, toGameIndex, toDynamoGameDetail } from '../../src/dynamoDB/transform'
 
 test.each`
 date            | gameNumber  | expectedgameIndex
@@ -24,5 +24,22 @@ test('toDynamoPlays transforms input into DynamoPlay', () =>{
   }]
 
   const result = toDynamoPlays(transactionId, gameIndex, [play], ttl)
+  expect(result).toEqual(expectedResult)
+})
+
+test('toDynamoGameDetail transforms input into DynamoGameDetail', () =>{
+  const transactionId = 'testTransactionId'
+  const gameIndex = '2022-04-01:1'
+  const gameDetail = jest.fn()
+  const ttl = 3600
+
+  const expectedResult = { 
+    tx_id: transactionId, 
+    game_index: gameIndex, 
+    game_detail: gameDetail, 
+    ttl
+  }
+
+  const result = toDynamoGameDetail(transactionId, gameIndex, gameDetail, ttl)
   expect(result).toEqual(expectedResult)
 })

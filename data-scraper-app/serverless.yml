@@ -20,18 +20,18 @@ functions:
   getPlays:
     handler: src/handler.getPlays
   
-  getGameDetails:
-    handler: src/handler.getGameDetails
+  getGameDetail:
+    handler: src/handler.getGameDetail
 
 stepFunctions:
   stateMachines:
-    ScrapeDataForYear:
+    BTSDataScraper:
       type: EXPRESS
       loggingConfig:
         level: ALL
         includeExecutionData: true
         destinations:
-          - Fn::GetAtt: [ScrapeDataForYearLogGroup, Arn]
+          - Fn::GetAtt: [BTSDataScraperLogGroup, Arn]
       definition:
         StartAt: GetGames
         States:
@@ -43,9 +43,9 @@ stepFunctions:
           ScrapeDataForAllGames:
             Type: Map
             Iterator:
-              StartAt: ScrapeGameDetails
+              StartAt: ScrapeDataForGame
               States:
-                ScrapeGameDetails:
+                ScrapeDataForGame:
                   Type: Parallel
                   Next: FinalState
                   Branches:
@@ -66,12 +66,22 @@ stepFunctions:
                           plays.$: $.plays
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
                         End: true
-                  - StartAt: GetGameDetails
+                  - StartAt: GetGameDetail
                     States:
-                      GetGameDetails:
+                      GetGameDetail:
                         Type: Task
                         Resource:
-                          Fn::GetAtt: [getGameDetails, Arn]
+                          Fn::GetAtt: [getGameDetail, Arn]
+                        ResultPath: $.gameDetail
+                        Next: WriteGameDetailToDynamo
+                      WriteGameDetailToDynamo:
+                        Type: Task
+                        Parameters:
+                          transactionId.$: $$.Execution.Id
+                          date.$: $.date
+                          gamePk.$: $.gamePk
+                          gameDetail.$: $.gameDetail
+                        Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writeGameDetailToDynamo
                         End: true
                 FinalState:
                   Type: Pass
@@ -81,7 +91,7 @@ stepFunctions:
 
 resources:
   Resources:
-    ScrapeDataForYearLogGroup:
+    BTSDataScraperLogGroup:
       Type: AWS::Logs::LogGroup
       Properties:
-        LogGroupName: !Join [ /, [ stepFunctions, ScrapeDataForYear]]
+        LogGroupName: !Join [ /, [ stepFunctions, BTSDataScraper]]

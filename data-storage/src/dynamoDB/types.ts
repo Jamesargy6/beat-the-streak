@@ -1,4 +1,6 @@
-class DynamoBaseItemType{}
+class DynamoBaseItemType{
+  [others: string]: string | number | object
+}
 
 class DynamoPlay extends DynamoBaseItemType {
   tx_batter_id: string
@@ -6,4 +8,10 @@ class DynamoPlay extends DynamoBaseItemType {
   ttl: number
 }
 
-export { DynamoBaseItemType, DynamoPlay }
+class DynamoGameDetail extends DynamoBaseItemType {
+  tx_id: string
+  game_index: string
+  ttl: number
+}
+
+export { DynamoBaseItemType, DynamoPlay, DynamoGameDetail }

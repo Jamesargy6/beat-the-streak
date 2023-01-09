@@ -1,17 +1,17 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
 import { AWS_REGION } from '../constants'
-
 import { DynamoClient } from './client'
-
-import { DynamoPlay, DynamoBaseItemType } from './types'
+import { DynamoPlay, DynamoBaseItemType, DynamoGameDetail } from './types'
 
 const DyanmoTypeConfigMap: Record<string, string>  = {
-    [DynamoPlay.name]: 'bts-play'
+    [DynamoPlay.name]: 'bts-play',
+    [DynamoGameDetail.name]: 'bts-game-detail'
 }
 
 type DynamoClientInterface<T> = {
   batchWrite(items: Array<T>)
+  write(item: T)
 }
 
 const makeDynamoClient = <T extends DynamoBaseItemType>(c: new () => T): DynamoClientInterface<T> => {

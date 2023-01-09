@@ -7,7 +7,8 @@ describe('Dynamoclient', () => {
   beforeEach(() => {
     jest.resetAllMocks()
     mockDynamoDBClient = {
-      batchWrite: jest.fn()
+      batchWrite: jest.fn(),
+      put: jest.fn()
     }
   })
   
@@ -19,6 +20,14 @@ describe('Dynamoclient', () => {
     const thing = makeThing()
     expect(thing._client).toBe(mockDynamoDBClient)
     expect(thing._tableName).toBe(tableName)
+  })
+
+  test('write', async () => {
+    const testItem = {}
+    const testPutCommandInput = { TableName: tableName, Item: testItem }
+    const thing = makeThing()
+    await thing.write(testItem)
+    expect(mockDynamoDBClient.put).toHaveBeenCalledWith(testPutCommandInput)
   })
 
   test('batchWrite', async () => {
@@ -40,6 +49,5 @@ describe('Dynamoclient', () => {
     await thing.batchWrite(Array(26).fill(testItem))
     expect(mockDynamoDBClient.batchWrite).toHaveBeenNthCalledWith(1, expectedBatchWriteInput1)
     expect(mockDynamoDBClient.batchWrite).toHaveBeenNthCalledWith(2, expectedBatchWriteInput2)
-
   })
 })

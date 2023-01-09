@@ -14,7 +14,7 @@ export type Game = {
   gameNumber: number
 }
 
-export type GameDetails = {
+export type GameDetail = {
   venueId: number,
   awayBattingOrder: Array<number>,
   awayProbablePitcher: number,
