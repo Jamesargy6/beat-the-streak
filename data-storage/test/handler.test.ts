@@ -14,16 +14,13 @@ beforeEach(() => {
 })
 
 describe('writePlaysToDynamo', () => {
-  Date.now = jest.fn(() => 0)
-  const testTtl = 3600
 
   const testGameIndex = '2022-04-01:1'
   const mockToGameIndex = jest.fn(() => testGameIndex)
-  const testDynamoPlay = { tx_id: 'testTransactionId',
-    tx_batter_id: 'testTransactionId:12345',
+  const testDynamoPlay = {
+    batter_id: 12345,
     play_index: '2022-04-01:1:000',
-    play: { },
-    ttl: testTtl
+    play: { }
   }
   const mockToDynamoPlays = jest.fn(() => [testDynamoPlay])
 
@@ -39,7 +36,6 @@ describe('writePlaysToDynamo', () => {
   })
   test('wiring', async () => {
     const input = {
-      transactionId: 'testTransactionId',
       date: '2022-04-01',
       gamePk: 1,
       plays: [{ batterId: 12345 }]
@@ -47,22 +43,18 @@ describe('writePlaysToDynamo', () => {
     await writePlaysToDynamo(input)
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
     expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gamePk)
-    expect(toDynamoPlaysSpy).toHaveBeenCalledWith(input.transactionId, testGameIndex, input.plays, testTtl)
+    expect(toDynamoPlaysSpy).toHaveBeenCalledWith(testGameIndex, input.plays)
     expect(mockDynamoClient.batchWrite).toHaveBeenLastCalledWith([testDynamoPlay])
   })
 })
 
 describe('writeGameDetailToDynamo', () => {
-  Date.now = jest.fn(() => 0)
-  const testTtl = 3600
 
   const testGameIndex = '2022-04-01:1'
   const mockToGameIndex = jest.fn(() => testGameIndex)
-  const testDynamoGameDetail = { 
-    tx_id: 'testTransactionId',
+  const testDynamoGameDetail = {
     game_index: '2022-04-01:1',
-    game_detail: { },
-    ttl: testTtl
+    game_detail: { }
   }
   const mockToDynamoGameDetail = jest.fn(() => testDynamoGameDetail)
   
@@ -78,7 +70,6 @@ describe('writeGameDetailToDynamo', () => {
   })
   test('wiring', async () => {
     const input = {
-      transactionId: 'testTransactionId',
       date: '2022-04-01',
       gamePk: 1,
       gameDetail: { }
@@ -86,7 +77,7 @@ describe('writeGameDetailToDynamo', () => {
     await writeGameDetailToDynamo(input)
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoGameDetail)
     expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gamePk)
-    expect(toDynamoGameDetailSpy).toHaveBeenCalledWith(input.transactionId, testGameIndex, input.gameDetail, testTtl)
+    expect(toDynamoGameDetailSpy).toHaveBeenCalledWith(testGameIndex, input.gameDetail)
     expect(mockDynamoClient.write).toHaveBeenLastCalledWith(testDynamoGameDetail)
   })
 })

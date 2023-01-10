@@ -4,26 +4,21 @@ const PLAY_NUMBER_FORMAT_LENGTH = 3
 
 const toGameIndex = (date: string, gamePk: number): string => `${date}:${gamePk}`
 
-const toTxBatterId = (transactionId: string, batterId: number): string => `${transactionId}:${batterId}`
-
 const toPlayIndex = (gameIndex: string, playNumber: number): string => {
   const formattedPlayNumber = String(playNumber).padStart(PLAY_NUMBER_FORMAT_LENGTH, '0')
   return `${gameIndex}:${formattedPlayNumber}`
 }
 
-const toDynamoPlays = (transactionId: string, gameIndex: string, plays: Array<{ batterId: number }>, ttl: number): Array<DynamoPlay> =>
+const toDynamoPlays = (gameIndex: string, plays: Array<{ batterId: number }>): Array<DynamoPlay> =>
   plays.map((play, playNumber) => {
   const { batterId } = play
   const play_index = toPlayIndex(gameIndex, playNumber)
-    const transactionBatterId = toTxBatterId(transactionId, batterId)
-    return { tx_batter_id: transactionBatterId, play_index, play, ttl }
+    return { batter_id: batterId, play_index, play }
   })
 
-const toDynamoGameDetail = (transactionId: string, gameIndex: string, gameDetail: object, ttl: number): DynamoGameDetail => ({ 
-  tx_id: transactionId, 
+const toDynamoGameDetail = (gameIndex: string, gameDetail: object): DynamoGameDetail => ({ 
   game_index: gameIndex, 
-  game_detail: gameDetail, 
-  ttl
+  game_detail: gameDetail,
 })
 
 export { toGameIndex, toDynamoPlays, toDynamoGameDetail }

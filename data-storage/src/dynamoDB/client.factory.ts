@@ -5,8 +5,8 @@ import { DynamoClient } from './client'
 import { DynamoPlay, DynamoBaseItemType, DynamoGameDetail } from './types'
 
 const DyanmoTypeConfigMap: Record<string, string>  = {
-    [DynamoPlay.name]: 'bts-play',
-    [DynamoGameDetail.name]: 'bts-game-detail'
+    [DynamoPlay.name]: 'bts_play',
+    [DynamoGameDetail.name]: 'bts_game_table'
 }
 
 type DynamoClientInterface<T> = {
