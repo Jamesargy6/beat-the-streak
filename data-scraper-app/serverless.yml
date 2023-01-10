@@ -60,7 +60,6 @@ stepFunctions:
                       WritePlaysToDynamo:
                         Type: Task
                         Parameters:
-                          transactionId.$: $$.Execution.Id
                           date.$: $.date
                           gamePk.$: $.gamePk
                           plays.$: $.plays
@@ -77,7 +76,6 @@ stepFunctions:
                       WriteGameDetailToDynamo:
                         Type: Task
                         Parameters:
-                          transactionId.$: $$.Execution.Id
                           date.$: $.date
                           gamePk.$: $.gamePk
                           gameDetail.$: $.gameDetail

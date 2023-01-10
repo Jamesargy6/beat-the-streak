@@ -22,7 +22,7 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-play
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts_play
   writeGameDetailToDynamo:
     handler: src/handler.writeGameDetailToDynamo
     iamRoleStatementsInherit: true
@@ -31,47 +31,37 @@ functions:
         Action:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
-        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game-detail
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts_game_table
 
 resources:
   Resources:
     playTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts-play
+        TableName: bts_play
         AttributeDefinitions:
-          - AttributeName: tx_batter_id
-            AttributeType: S
+          - AttributeName: batter_id
+            AttributeType: N
           - AttributeName: play_index
             AttributeType: S
         KeySchema:
-          - AttributeName: tx_batter_id
+          - AttributeName: batter_id
             KeyType: HASH
           - AttributeName: play_index
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
-        TimeToLiveSpecification:
-          Enabled: True
-          AttributeName: ttl
     gameDetailTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: bts-game-detail
+        TableName: bts_game_table
         AttributeDefinitions:
-          - AttributeName: tx_id
-            AttributeType: S
           - AttributeName: game_index
             AttributeType: S
         KeySchema:
-          - AttributeName: tx_id
-            KeyType: HASH
           - AttributeName: game_index
-            KeyType: RANGE
+            KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 10
           WriteCapacityUnits: 10
-        TimeToLiveSpecification:
-          Enabled: True
-          AttributeName: ttl
