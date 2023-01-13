@@ -12,12 +12,11 @@ ${'2022-04-01'} | ${2}        | ${'2022-04-01:2'}
 
 test('toDynamoPlays transforms input into DynamoPlay', () =>{
   const gameIndex = '2022-04-01:1'
-  const play = { batterId: 12345 }
+  const play = { batterId: 12345, pitcherId: 99999, someOtherAttr: 'foo' }
 
   const expectedResult = [{
-    batter_id: play.batterId,
-    play_index: `${gameIndex}:000`,
-    play,
+    playIndex: `${gameIndex}:000`,
+    ...play
   }]
 
   const result = toDynamoPlays(gameIndex, [play])
@@ -26,12 +25,9 @@ test('toDynamoPlays transforms input into DynamoPlay', () =>{
 
 test('toDynamoGameDetail transforms input into DynamoGameDetail', () =>{
   const gameIndex = '2022-04-01:1'
-  const gameDetail = jest.fn()
+  const gameDetail = { someOtherAttr: 'foo' }
 
-  const expectedResult = { 
-    game_index: gameIndex, 
-    game_detail: gameDetail
-  }
+  const expectedResult = { gameIndex, ...gameDetail }
 
   const result = toDynamoGameDetail(gameIndex, gameDetail)
   expect(result).toEqual(expectedResult)

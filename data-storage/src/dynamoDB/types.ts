@@ -3,12 +3,13 @@ class DynamoBaseItemType{
 }
 
 class DynamoPlay extends DynamoBaseItemType {
-  batter_id: number
-  play_index: string
+  batterId: number
+  pitcherId: number
+  playIndex: string
 }
 
 class DynamoGameDetail extends DynamoBaseItemType {
-  game_index: string
+  gameIndex: string
 }
 
 export { DynamoBaseItemType, DynamoPlay, DynamoGameDetail }
