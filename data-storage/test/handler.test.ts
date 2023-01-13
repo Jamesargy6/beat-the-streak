@@ -18,8 +18,9 @@ describe('writePlaysToDynamo', () => {
   const testGameIndex = '2022-04-01:1'
   const mockToGameIndex = jest.fn(() => testGameIndex)
   const testDynamoPlay = {
-    batter_id: 12345,
-    play_index: '2022-04-01:1:000',
+    batterId: 12345,
+    pitcherId: 99999,
+    playIndex: '2022-04-01:1:000',
     play: { }
   }
   const mockToDynamoPlays = jest.fn(() => [testDynamoPlay])
@@ -38,7 +39,7 @@ describe('writePlaysToDynamo', () => {
     const input = {
       date: '2022-04-01',
       gamePk: 1,
-      plays: [{ batterId: 12345 }]
+      plays: [{ batterId: 12345, pitcherId: 99999, }]
     }
     await writePlaysToDynamo(input)
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
@@ -53,8 +54,7 @@ describe('writeGameDetailToDynamo', () => {
   const testGameIndex = '2022-04-01:1'
   const mockToGameIndex = jest.fn(() => testGameIndex)
   const testDynamoGameDetail = {
-    game_index: '2022-04-01:1',
-    game_detail: { }
+    gameIndex: '2022-04-01:1'
   }
   const mockToDynamoGameDetail = jest.fn(() => testDynamoGameDetail)
   

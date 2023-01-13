@@ -5,7 +5,7 @@ import { DynamoPlay, DynamoGameDetail } from './dynamoDB/types'
 type WritePlaysToDynamoInput = {
   date: string,
   gamePk: number,
-  plays: Array<{ batterId: number }>
+  plays: Array<{ batterId: number, pitcherId: number }>
 }
 const writePlaysToDynamo = async (event: WritePlaysToDynamoInput) => {
   const dynamoClient = makeDynamoClient(DynamoPlay)
