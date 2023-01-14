@@ -4,13 +4,14 @@ import { DynamoGameDetail, DynamoPlay } from '../src/dynamoDB/types'
 
 jest.mock('../src/dynamoDB/transform')
 
-import { writePlaysToDynamo, writeGameDetailToDynamo } from '../src/handler'
+import { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo } from '../src/handler'
 
-let mockBatchWrite, mockWrite, mockDynamoClient
+let mockBatchWrite, mockWrite, mockRead, mockDynamoClient
 beforeEach(() => {
   jest.clearAllMocks()
   mockBatchWrite = jest.fn()
   mockWrite = jest.fn()
+  mockRead = jest.fn()
 })
 
 describe('writePlaysToDynamo', () => {
@@ -31,7 +32,8 @@ describe('writePlaysToDynamo', () => {
     toDynamoPlaysSpy = jest.spyOn(transform, 'toDynamoPlays').mockImplementation(mockToDynamoPlays)
     mockDynamoClient = { 
       batchWrite: mockBatchWrite,
-      write: mockWrite
+      write: mockWrite,
+      read: mockRead
     }
     makeDynamoClientSpy = jest.spyOn(dynamoDBClientFactory, 'makeDynamoClient').mockImplementation(() => mockDynamoClient)
   })
@@ -64,7 +66,8 @@ describe('writeGameDetailToDynamo', () => {
     toDynamoGameDetailSpy = jest.spyOn(transform, 'toDynamoGameDetail').mockImplementation(mockToDynamoGameDetail)
     mockDynamoClient = { 
       batchWrite: mockBatchWrite,
-      write: mockWrite
+      write: mockWrite,
+      read: mockRead
     }
     makeDynamoClientSpy = jest.spyOn(dynamoDBClientFactory, 'makeDynamoClient').mockImplementation(() => mockDynamoClient)
   })
@@ -79,5 +82,34 @@ describe('writeGameDetailToDynamo', () => {
     expect(toGameIndexSpy).toHaveBeenCalledWith(input.date, input.gamePk)
     expect(toDynamoGameDetailSpy).toHaveBeenCalledWith(testGameIndex, input.gameDetail)
     expect(mockDynamoClient.write).toHaveBeenLastCalledWith(testDynamoGameDetail)
+  })
+})
+
+describe('readGameDetailFromDynamo', () => {
+
+  const testGameIndex = '2022-04-01:1'
+  const testDynamoGameDetail = {
+    gameIndex: testGameIndex,
+    someOtherAttr: 'foo'
+  }
+  
+  let makeDynamoClientSpy
+  beforeEach(() => {
+    mockRead = jest.fn(() => testDynamoGameDetail)
+    mockDynamoClient = { 
+      batchWrite: mockBatchWrite,
+      write: mockWrite,
+      read: mockRead
+    }
+    makeDynamoClientSpy = jest.spyOn(dynamoDBClientFactory, 'makeDynamoClient').mockImplementation(() => mockDynamoClient)
+  })
+  test('wiring', async () => {
+    const input = {
+      gameIndex: testGameIndex
+    }
+    const result = await readGameDetailFromDynamo(input)
+    expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoGameDetail)
+    expect(mockRead).toHaveBeenCalledWith(testGameIndex)
+    expect(result).toEqual(testDynamoGameDetail)
   })
 })

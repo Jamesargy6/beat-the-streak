@@ -30,4 +30,13 @@ const writeGameDetailToDynamo = async (event: WriteGameDetailToDynamoInput) => {
   await dynamoClient.write(dynamoGameDetail)
 }
 
-export { writePlaysToDynamo, writeGameDetailToDynamo }
+type ReadGameDetailFromDynamoInput = {
+  gameIndex: string
+}
+const readGameDetailFromDynamo = async (event: ReadGameDetailFromDynamoInput): Promise<DynamoGameDetail | undefined> => {
+  const dynamoClient = makeDynamoClient(DynamoGameDetail)
+  const { gameIndex } = event
+  return dynamoClient.read(gameIndex)
+}
+
+export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo }

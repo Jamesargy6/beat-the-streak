@@ -32,6 +32,14 @@ functions:
           - dynamodb:PutItem
           - dynamodb:BatchWriteItem
         Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game
+  readGameDetailFromDynamo:
+    handler: src/handler.readGameDetailFromDynamo
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:GetItem
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game
 
 resources:
   Resources:

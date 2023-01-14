@@ -12,4 +12,6 @@ class DynamoGameDetail extends DynamoBaseItemType {
   gameIndex: string
 }
 
-export { DynamoBaseItemType, DynamoPlay, DynamoGameDetail }
+type DynamoConfig = [tableName: string, partitionKey: string, sortKey?: string];
+
+export { DynamoBaseItemType, DynamoPlay, DynamoGameDetail, DynamoConfig }
