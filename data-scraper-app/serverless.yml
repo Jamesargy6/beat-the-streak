@@ -60,7 +60,14 @@ stepFunctions:
                         Resource:
                           Fn::GetAtt: [getPlays, Arn]
                         ResultPath: $.plays
-                        Next: WritePlaysToDynamo
+                        Next: DoPlaysExist
+                      DoPlaysExist:
+                        Type: Choice
+                        Default: WritePlaysToDynamo
+                        Choices:
+                        - Variable: $.plays[0]
+                          IsPresent: false
+                          Next: GetPlaysFinalState
                       WritePlaysToDynamo:
                         Type: Task
                         Parameters:
