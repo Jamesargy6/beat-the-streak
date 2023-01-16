@@ -1,5 +1,6 @@
 import MLBStatsAPI from 'mlb-stats-api'
 import { GameType, PlayByPlay, Schedule, SportID, BoxScore, ContextMetrics } from 'mlb-stats-api'
+import { GameNotFoundError } from './errors'
 class MLBStatsAPIClient {
     _client: MLBStatsAPI
     constructor (client: MLBStatsAPI) {
@@ -25,13 +26,31 @@ class MLBStatsAPIClient {
 
     async getBoxScore(gamePk: number): Promise<BoxScore> {
       const pathParams = { gamePk }
-      const response = await this._client.getGameBoxscore({ pathParams })
+      let response
+      try {
+        response = await this._client.getGameBoxscore({ pathParams })
+      } catch (err) {
+        const { status: statusCode } = err.response
+        if (statusCode == 404) {
+          throw new GameNotFoundError(gamePk)
+        } 
+        throw err
+      }
       return response.data
     }
 
     async getContextMetrics(gamePk: number): Promise<ContextMetrics> {
       const pathParams = { gamePk }
-      const response = await this._client.getGameContextMetrics({ pathParams })
+      let response
+      try {
+        response = await this._client.getGameContextMetrics({ pathParams })
+      } catch (err) {
+        const { status: statusCode } = err.response
+        if (statusCode == 404) {
+          throw new GameNotFoundError(gamePk)
+        } 
+        throw err
+      }
       return response.data
     }
 }

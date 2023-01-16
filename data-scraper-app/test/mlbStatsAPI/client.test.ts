@@ -1,5 +1,17 @@
 import { BoxScore, GameType, PlayByPlay, Schedule, SportID, BoxScoreInfoLabel, ContextMetrics } from 'mlb-stats-api'
 import { MLBStatsAPIClient } from '../../src/mlbStatsAPI/client'
+import { GameNotFoundError } from '../../src/mlbStatsAPI/errors'
+
+class ErrorWithStatusCode extends Error {
+  __proto__ = Error
+
+  response: { status: number }
+  constructor(status: number) {
+    super('foo')
+    this.response = { status }
+    Object.setPrototypeOf(this, ErrorWithStatusCode.prototype)
+  }
+}
 
 describe('MLBStatsAPIClient', () => {
   const testSchedule: Schedule = { dates: [] }
@@ -115,6 +127,26 @@ describe('MLBStatsAPIClient', () => {
       expect(mockGetGameBoxscore).toHaveBeenCalledWith({ pathParams: expectedPathParams })
       expect(result).toBe(testBoxScore)
     })
+
+    test('404 received', async () => {
+      mockGetGameBoxscore = jest.fn(async (_) => { throw new ErrorWithStatusCode(404)})
+      mockClient = {
+        getGameBoxscore: mockGetGameBoxscore
+      }      
+      const thing = getThing()
+      const action = async () => await thing.getBoxScore(testGamePk)
+      await expect(action).rejects.toThrow(GameNotFoundError)
+    })
+
+    test('Some other error received', async () => {
+      mockGetGameBoxscore = jest.fn(async (_) => { throw new ErrorWithStatusCode(500)})
+      mockClient = {
+        getGameBoxscore: mockGetGameBoxscore
+      }      
+      const thing = getThing()
+      const action = async () => await thing.getBoxScore(testGamePk)
+      await expect(action).rejects.toThrow(ErrorWithStatusCode)
+    })
   })
 
   describe('getContextMetrics', () => {
@@ -128,6 +160,26 @@ describe('MLBStatsAPIClient', () => {
       const result = await thing.getContextMetrics(testGamePk)
       expect(mockGetGameContextMetrics).toHaveBeenCalledWith({ pathParams: expectedPathParams })
       expect(result).toBe(testContextMetrics)
+    })
+
+    test('404 received', async () => {
+      mockGetGameContextMetrics = jest.fn(async (_) => { throw new ErrorWithStatusCode(404)})
+      mockClient = {
+        getGameContextMetrics: mockGetGameContextMetrics
+      }      
+      const thing = getThing()
+      const action = async () => await thing.getContextMetrics(testGamePk)
+      await expect(action).rejects.toThrow(GameNotFoundError)
+    })
+
+    test('Some other error received', async () => {
+      mockGetGameContextMetrics = jest.fn(async (_) => { throw new ErrorWithStatusCode(500)})
+      mockClient = {
+        getGameContextMetrics: mockGetGameContextMetrics
+      }      
+      const thing = getThing()
+      const action = async () => await thing.getContextMetrics(testGamePk)
+      await expect(action).rejects.toThrow(ErrorWithStatusCode)
     })
   })
 })

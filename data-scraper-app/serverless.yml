@@ -64,6 +64,9 @@ stepFunctions:
                           gamePk.$: $.gamePk
                           plays.$: $.plays
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writePlaysToDynamo
+                        Next: GetPlaysFinalState
+                      GetPlaysFinalState:
+                        Type: Pass
                         End: true
                   - StartAt: GetGameDetail
                     States:
@@ -72,6 +75,9 @@ stepFunctions:
                         Resource:
                           Fn::GetAtt: [getGameDetail, Arn]
                         ResultPath: $.gameDetail
+                        Catch:
+                        - ErrorEquals: [GameNotFoundError]
+                          Next: GetGameDetailFinalState
                         Next: WriteGameDetailToDynamo
                       WriteGameDetailToDynamo:
                         Type: Task
@@ -80,6 +86,9 @@ stepFunctions:
                           gamePk.$: $.gamePk
                           gameDetail.$: $.gameDetail
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writeGameDetailToDynamo
+                        Next: true
+                      GetGameDetailFinalState:
+                        Type: Pass
                         End: true
                 FinalState:
                   Type: Pass
