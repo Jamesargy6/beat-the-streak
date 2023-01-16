@@ -5,6 +5,10 @@ plugins:
   - serverless-plugin-typescript
   - serverless-step-functions
 
+custom:
+  serverlessPluginTypescript:
+    tsConfigFileLocation: './tsconfig.json'
+
 frameworkVersion: '3'
 
 provider:
