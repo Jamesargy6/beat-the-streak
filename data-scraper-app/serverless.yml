@@ -86,7 +86,7 @@ stepFunctions:
                           gamePk.$: $.gamePk
                           gameDetail.$: $.gameDetail
                         Resource: arn:aws:lambda:us-west-2:104843235006:function:data-storage-${sls:stage}-writeGameDetailToDynamo
-                        Next: true
+                        Next: GetGameDetailFinalState
                       GetGameDetailFinalState:
                         Type: Pass
                         End: true
