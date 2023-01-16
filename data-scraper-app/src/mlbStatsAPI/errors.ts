@@ -5,6 +5,7 @@ class GameNotFoundError extends Error {
   constructor(gamePk: number) {
     super(`Game "${gamePk}" was not found.`)
     Object.setPrototypeOf(this, GameNotFoundError.prototype)
+    this.name = 'GameNotFoundError'
   }
 } 
 
