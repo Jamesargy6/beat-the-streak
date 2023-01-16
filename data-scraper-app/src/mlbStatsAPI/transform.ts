@@ -39,8 +39,8 @@ const toGameDetail = (boxscore: BoxScore, contextMetrics: ContextMetrics): GameD
   const { game } = contextMetrics
   const { teams: contextMetricsTeams } = game
   const { away: contextMetricsAway, home: contextMetricsHome } = contextMetricsTeams
-  const awayProbablePitcher = contextMetricsAway.probablePitcher.id
-  const homeProbablePitcher = contextMetricsHome.probablePitcher.id
+  const awayProbablePitcher = contextMetricsAway.probablePitcher ? contextMetricsAway.probablePitcher.id : null
+  const homeProbablePitcher = contextMetricsHome.probablePitcher ? contextMetricsHome.probablePitcher.id : null
   return { 
     venueId,
     awayBattingOrder,

@@ -17,9 +17,9 @@ export type Game = {
 export type GameDetail = {
   venueId: number,
   awayBattingOrder: Array<number>,
-  awayProbablePitcher: number,
+  awayProbablePitcher: number | null,
   homeBattingOrder: Array<number>,
-  homeProbablePitcher: number,
+  homeProbablePitcher: number | null,
   weather: string,
   wind: string,
 }
