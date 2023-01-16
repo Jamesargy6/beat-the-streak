@@ -79,7 +79,7 @@ declare module 'mlb-stats-api' {
   }
 
   type ContextMetricsTeam = {
-    probablePitcher: ContextMetricsProbablePitcher
+    probablePitcher?: ContextMetricsProbablePitcher
   }
 
   type ContextMetricsGame = {

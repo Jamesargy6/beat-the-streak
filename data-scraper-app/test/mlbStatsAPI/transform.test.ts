@@ -121,15 +121,24 @@ describe('toGameDetail', () => {
       wind: '16 mph, L To R.'
     }
   })
-  test('BoxScore to GameDetail', () => {
+  test('BoxScore + ContextMetrics to GameDetail', () => {
     const result = toGameDetail(testBoxScore, testContextMetrics)
     expect(result).toEqual(expectedGameDetail)
   })
 
-  test('BoxScore to GameDetail with no BoxScoreInfo', () => {
+  test('BoxScore + ContextMetrics to GameDetail with no BoxScoreInfo', () => {
     testBoxScore.info = []
     expectedGameDetail.weather = ''
     expectedGameDetail.wind = ''
+    const result = toGameDetail(testBoxScore, testContextMetrics)
+    expect(result).toEqual(expectedGameDetail)
+  })
+
+  test('BoxScore + ContextMetrics to GameDetail with no pitcher probables', () => {
+    delete testContextMetrics.game.teams.away.probablePitcher
+    delete testContextMetrics.game.teams.home.probablePitcher
+    expectedGameDetail.awayProbablePitcher = null
+    expectedGameDetail.homeProbablePitcher = null
     const result = toGameDetail(testBoxScore, testContextMetrics)
     expect(result).toEqual(expectedGameDetail)
   })
