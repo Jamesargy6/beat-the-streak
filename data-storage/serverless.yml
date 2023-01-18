@@ -40,6 +40,14 @@ functions:
         Action:
           - dynamodb:GetItem
         Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game
+  scanPlaysFromDynamo:
+    handler: src/handler.scanPlaysFromDynamo
+    iamRoleStatementsInherit: true
+    iamRoleStatements:
+      - Effect: "Allow"        
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:us-west-2:*:table/bts-game
 
 resources:
   Resources:

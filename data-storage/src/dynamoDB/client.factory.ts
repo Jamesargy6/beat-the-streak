@@ -5,14 +5,34 @@ import { DynamoClient } from './client'
 import { DynamoPlay, DynamoBaseItemType, DynamoGameDetail, DynamoConfig } from './types'
 
 const DyanmoTypeConfigMap: Record<string, DynamoConfig>  = {
-    [DynamoPlay.name]:        ['bts-play',  'batterId', 'playIndex'],
-    [DynamoGameDetail.name]:  ['bts-game',  'gameIndex']
+    [DynamoPlay.name]: {
+      tableName: 'bts-play',
+      primaryKey: {
+        partitionKey: 'batterId',
+        sortKey: 'playIndex'
+      },
+      secondaryKey: {
+        indexName: 'pitcherId_idx',
+        partitionKey: 'pitcherId',
+        sortKey: 'playIndex'
+      }
+    },
+    [DynamoGameDetail.name]:  {
+      tableName: 'bts-game',  
+      primaryKey: {
+        partitionKey: 'gameIndex'
+      }
+    }
 }
 
 type DynamoClientInterface<T> = {
   batchWrite(items: Array<T>)
   write(item: T)
   read(partitionKeyValue: string | number, sortKeyValue?: string | number): Promise<T | undefined>
+  queryInSortKeyRange(useGlobalSecondaryIndex: boolean, 
+    partitionKeyValue: string | number, 
+    sortKeyStartValue: string | number, 
+    sortKeyEndValue: string | number)
 }
 
 const makeDynamoClient = <T extends DynamoBaseItemType>(c: new () => T): DynamoClientInterface<T> => {
