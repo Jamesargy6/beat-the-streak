@@ -2,9 +2,9 @@ import { toDynamoPlays, toGameIndex, toDynamoGameDetail } from '../../src/dynamo
 
 test.each`
 date            | gameNumber  | expectedgameIndex
-${'2022-04-01'} | ${1}        | ${'2022-04-01:1'}
-${'2022-04-01'} | ${1}        | ${'2022-04-01:1'}
-${'2022-04-01'} | ${2}        | ${'2022-04-01:2'}
+${'2022-04-01'} | ${1}        | ${'2022-04-01:000001'}
+${'2022-04-01'} | ${1}        | ${'2022-04-01:000001'}
+${'2022-04-01'} | ${2}        | ${'2022-04-01:000002'}
 `('toGameIndex transforms input into playId', ({ date, gameNumber, expectedgameIndex }) => {
   const result = toGameIndex(date, gameNumber)
   expect(result).toBe(expectedgameIndex)

@@ -1,6 +1,7 @@
 import { makeDynamoClient } from './dynamoDB/client.factory'
 import { toGameIndex, toDynamoPlays, toDynamoGameDetail } from './dynamoDB/transform'
 import { DynamoPlay, DynamoGameDetail } from './dynamoDB/types'
+import { MissingPartitionKeyError, NonUniquePartitionKeyError } from './errors'
 
 type WritePlaysToDynamoInput = {
   date: string,
@@ -39,4 +40,27 @@ const readGameDetailFromDynamo = async (event: ReadGameDetailFromDynamoInput): P
   return dynamoClient.read(gameIndex)
 }
 
-export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo }
+type ScanPlaysFromDynamoInput = {
+  startDate: string,
+  endDate: string,
+  batterId?: number,
+  pitcherId?: number
+}
+const scanPlaysFromDynamo = async (event: ScanPlaysFromDynamoInput): Promise<Array<DynamoPlay>> => {
+  const dynamoClient = makeDynamoClient(DynamoPlay)
+  const { startDate, endDate, batterId, pitcherId } = event
+  if (batterId && pitcherId) {
+    throw new NonUniquePartitionKeyError()
+  }
+  const partitionKeyValue = batterId ? batterId : pitcherId
+  if (!partitionKeyValue) {
+    throw new MissingPartitionKeyError()
+  }
+  const useGlobalSecondaryIndex = !!pitcherId
+  const sortKeyStartValue = toGameIndex(startDate, 0)
+  const sortKeyEndValue = toGameIndex(endDate, 999999)
+
+  return dynamoClient.queryInSortKeyRange(useGlobalSecondaryIndex, partitionKeyValue, sortKeyStartValue, sortKeyEndValue)
+}
+
+export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo, scanPlaysFromDynamo }

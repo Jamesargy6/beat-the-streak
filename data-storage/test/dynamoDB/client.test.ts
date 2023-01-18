@@ -1,4 +1,5 @@
 import { DynamoClient } from '../../src/dynamoDB/client'
+import { InvalidIndexException, InvalidSortKeyException, NotFoundError } from '../../src/dynamoDB/errors'
 import { DynamoBaseItemType, DynamoConfig } from '../../src/dynamoDB/types'
 
 class TestDynamoClass extends DynamoBaseItemType { 
@@ -9,12 +10,28 @@ describe('Dynamoclient', () => {
   const testTableName = 'testTableName'
   const testPartitionKey = 'testPartitionKey'
   const testSortKey = 'testSortKey'
-  const testDynamoConfig: DynamoConfig = [testTableName, testPartitionKey, testSortKey]
+  const testSecondaryIndexName = 'pitcherId_idx'
+  const testPartitionKey2 = 'testPartitionKey2'
+  const testSortKey2 = 'testSortKey2'
+  const testDynamoConfig: DynamoConfig = {
+    tableName: testTableName,
+    primaryKey: {
+      partitionKey: testPartitionKey,
+      sortKey: testSortKey
+    },
+    secondaryKey: {
+      indexName: testSecondaryIndexName,
+      partitionKey: testPartitionKey2,
+      sortKey: testSortKey2
+    }
+  }
   
   const testItem = { foo: 'bar' }
 
   const testPartitionKeyValue = 'testPartitionKeyValue'
   const testSortKeyValue = 'testSortKeyValue'
+  const testSortKeyStartValue = 'testSortKeyStartValue'
+  const testSortKeyEndValue = 'testSortKeyEndValue'
 
   let mockDynamoDBClient
   beforeEach(() => {
@@ -65,11 +82,11 @@ describe('Dynamoclient', () => {
   })
 
   test.each`
-  testDynamoConfig                      | expectedKey
-  ${testDynamoConfig}                   | ${{ [testPartitionKey]: testPartitionKeyValue, [testSortKey]: testSortKeyValue }}
-  ${[testTableName, testPartitionKey]}  | ${{ [testPartitionKey]: testPartitionKeyValue }}
+  testDynamoConfig                                                                  | expectedKey
+  ${testDynamoConfig}                                                               | ${{ [testPartitionKey]: testPartitionKeyValue, [testSortKey]: testSortKeyValue }}
+  ${{ tableName: testTableName, primaryKey: { partitionKey: testPartitionKey } }}   | ${{ [testPartitionKey]: testPartitionKeyValue }}
   
-  `('read', async ({ testDynamoConfig, expectedKey }) => {
+  `('read happy paths', async ({ testDynamoConfig, expectedKey }) => {
     const mockGet = jest.fn(() => ({ Item: testItem }))
     mockDynamoDBClient = {
       batchWrite: jest.fn(),
@@ -85,4 +102,80 @@ describe('Dynamoclient', () => {
     })
     expect(result).toEqual(testItem)
   })
+
+  test('read returns an empty item', async () => {
+    const mockGet = jest.fn(() => ({ }))
+    mockDynamoDBClient = {
+      get: mockGet
+    }
+    const thing = makeThing(testDynamoConfig)
+    const action = async () => await thing.read(testPartitionKeyValue, testSortKeyValue)
+    expect(action).rejects.toThrowError(NotFoundError)
+  })
+
+  test.each`
+  testDynamoConfig    | testUserGlobalSecondaryIndex  | expectedIndexName         | expectedKeyConditionExpression                                                                                      | expectedExpressionAttributeValues
+  ${testDynamoConfig} | ${false}                      | ${undefined}              | ${`${testPartitionKey} = :partitionKeyValue AND ${testSortKey} BETWEEN :sortKeyStartValue AND :sortKeyEndValue`}    | ${{ ':partitionKeyValue': testPartitionKeyValue, ':sortKeyStartValue': testSortKeyStartValue, ':sortKeyEndValue': testSortKeyEndValue }}
+  ${testDynamoConfig} | ${true}                       | ${testSecondaryIndexName} | ${`${testPartitionKey2} = :partitionKeyValue AND ${testSortKey2} BETWEEN :sortKeyStartValue AND :sortKeyEndValue`}  | ${{ ':partitionKeyValue': testPartitionKeyValue, ':sortKeyStartValue': testSortKeyStartValue, ':sortKeyEndValue': testSortKeyEndValue }}
+  `('queryInSortKeyRange happy paths', async ({ testDynamoConfig, testUserGlobalSecondaryIndex, expectedIndexName, expectedKeyConditionExpression, expectedExpressionAttributeValues }) => {
+    const mockQuery = jest.fn(() => ({ Items: [testItem] }))
+    mockDynamoDBClient = {
+      query: mockQuery
+    }
+    
+    const thing = makeThing(testDynamoConfig)
+    const result = await thing.queryInSortKeyRange(testUserGlobalSecondaryIndex, testPartitionKeyValue, testSortKeyStartValue, testSortKeyEndValue)
+    expect(mockQuery).toHaveBeenCalledWith({
+      TableName: testTableName,
+      IndexName: expectedIndexName,
+      KeyConditionExpression: expectedKeyConditionExpression,
+      ExpressionAttributeValues: expectedExpressionAttributeValues
+    })
+    expect(result).toEqual([testItem])
+  })
+
+  test('queryInSortRange throws error if useGlobalSecondaryIndex=true and no secondaryKey exists', async () =>{
+    const mockQuery = jest.fn(() => ({ Items: [testItem] }))
+    mockDynamoDBClient = {
+      query: mockQuery
+    }
+    const testDynamoConfig = {
+      tableName: testTableName,
+      primaryKey: {
+        partitionKey: testPartitionKey,
+        sortKey: testSortKey
+      }
+    }
+
+    const thing = makeThing(testDynamoConfig)
+    const action = async () => await thing.queryInSortKeyRange(true, testPartitionKeyValue, testSortKeyStartValue, testSortKeyEndValue)
+    expect(action).rejects.toThrowError(InvalidIndexException)
+  })
+
+  test.each`
+  testDynamoConfig                                                                                                                                                                            | testUserGlobalSecondaryIndex
+  ${{ tableName: testTableName, primaryKey: { partitionKey: testPartitionKey } }}                                                                                                             | ${false}
+  ${{ tableName: testTableName, primaryKey: { partitionKey: testPartitionKey, sortKey: testSortKey },secondaryKey: { indexName: testSecondaryIndexName, partitionKey: testPartitionKey2, } }} | ${true}
+  `('queryInSortRange throws error if no sortKey exists', async ({ testDynamoConfig, testUserGlobalSecondaryIndex }) =>{
+    const mockQuery = jest.fn(() => ({ Items: [testItem] }))
+    mockDynamoDBClient = {
+      query: mockQuery
+    }
+
+    const thing = makeThing(testDynamoConfig)
+    const action = async () => await thing.queryInSortKeyRange(testUserGlobalSecondaryIndex, testPartitionKeyValue, testSortKeyStartValue, testSortKeyEndValue)
+    expect(action).rejects.toThrowError(InvalidSortKeyException)
+  })
+
+  test('queryInSortRange throws error ifresuls are empty', async () =>{
+    const mockQuery = jest.fn(() => ({ }))
+    mockDynamoDBClient = {
+      query: mockQuery
+    }
+    const thing = makeThing(testDynamoConfig)
+    const action = async () => await thing.queryInSortKeyRange(true, testPartitionKeyValue, testSortKeyStartValue, testSortKeyEndValue)
+    expect(action).rejects.toThrowError(NotFoundError)
+  })
 })
+
+
