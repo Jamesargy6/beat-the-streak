@@ -9,7 +9,7 @@ import {
   writePlaysToDynamo,
   writeGameDetailToDynamo,
   readGameDetailFromDynamo,
-  scanPlaysFromDynamo
+  queryPlaysFromDynamo
 } from '../src/handler'
 
 let mockBatchWrite, mockWrite, mockRead, mockQueryInSortKeyRange, mockDynamoClient
@@ -114,7 +114,7 @@ describe('readGameDetailFromDynamo', () => {
   })
 })
 
-describe('scanPlaysFromDynamo', () => {
+describe('queryPlaysFromDynamo', () => {
   const testStartDate = '2021-04-01'
   const testEndDate = '2021-06-01'
   const testBatterId = 642086
@@ -145,7 +145,7 @@ describe('scanPlaysFromDynamo', () => {
       endDate: testEndDate,
       batterId: testBatterId
     }
-    const result = await scanPlaysFromDynamo(input)
+    const result = await queryPlaysFromDynamo(input)
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(1, input.startDate, 0)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(2, input.endDate, 999999)
@@ -159,7 +159,7 @@ describe('scanPlaysFromDynamo', () => {
       endDate: testEndDate,
       pitcherId: testPitcherId
     }
-    const result = await scanPlaysFromDynamo(input)
+    const result = await queryPlaysFromDynamo(input)
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(1, input.startDate, 0)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(2, input.endDate, 999999)
@@ -172,7 +172,7 @@ describe('scanPlaysFromDynamo', () => {
       startDate: testStartDate,
       endDate: testEndDate
     }
-    const action = async () => await scanPlaysFromDynamo(input)
+    const action = async () => await queryPlaysFromDynamo(input)
     await expect(action).rejects.toThrowError(MissingPartitionKeyError)
   })
 
@@ -183,7 +183,7 @@ describe('scanPlaysFromDynamo', () => {
       batterId: testBatterId,
       pitcherId: testPitcherId
     }
-    const action = async () => await scanPlaysFromDynamo(input)
+    const action = async () => await queryPlaysFromDynamo(input)
     await expect(action).rejects.toThrowError(NonUniquePartitionKeyError)
   })
 })

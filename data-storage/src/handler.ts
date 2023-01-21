@@ -40,13 +40,13 @@ const readGameDetailFromDynamo = async (event: ReadGameDetailFromDynamoInput): P
   return dynamoClient.read(gameIndex)
 }
 
-type ScanPlaysFromDynamoInput = {
+type queryPlaysFromDynamoInput = {
   startDate: string,
   endDate: string,
   batterId?: number,
   pitcherId?: number
 }
-const scanPlaysFromDynamo = async (event: ScanPlaysFromDynamoInput): Promise<Array<DynamoPlay>> => {
+const queryPlaysFromDynamo = async (event: queryPlaysFromDynamoInput): Promise<Array<DynamoPlay>> => {
   const dynamoClient = makeDynamoClient(DynamoPlay)
   const { startDate, endDate, batterId, pitcherId } = event
   if (batterId && pitcherId) {
@@ -63,4 +63,4 @@ const scanPlaysFromDynamo = async (event: ScanPlaysFromDynamoInput): Promise<Arr
   return dynamoClient.queryInSortKeyRange(useGlobalSecondaryIndex, partitionKeyValue, sortKeyStartValue, sortKeyEndValue)
 }
 
-export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo, scanPlaysFromDynamo }
+export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo, queryPlaysFromDynamo }
