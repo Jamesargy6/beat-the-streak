@@ -1,7 +1,7 @@
 import * as dynamoDBClientFactory from '../src/dynamoDB/client.factory'
 import * as transform from '../src/dynamoDB/transform'
 import { DynamoGameDetail, DynamoPlay } from '../src/dynamoDB/types'
-import { MissingPartitionKeyError, NonUniquePartitionKeyError } from '../src/errors'
+import { MissingPlayerKeyError } from '../src/errors'
 
 jest.mock('../src/dynamoDB/transform')
 
@@ -141,6 +141,7 @@ describe('queryPlaysFromDynamo', () => {
 
   test('wiring', async () => {
     const input = {
+      playerKey: 'batterId',
       startDate: testStartDate,
       endDate: testEndDate,
       batterId: testBatterId
@@ -149,12 +150,13 @@ describe('queryPlaysFromDynamo', () => {
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(1, input.startDate, 0)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(2, input.endDate, 999999)
-    expect(mockQueryInSortKeyRange).toHaveBeenCalledWith(false, testBatterId, testGameIndex, testGameIndex2)
+    expect(mockQueryInSortKeyRange).toHaveBeenCalledWith(input.playerKey, testBatterId, testGameIndex, testGameIndex2, {})
     expect(result).toEqual([testDynamoPlay])
   })
 
   test('also works with pitcherId', async () => {
     const input = {
+      playerKey: 'pitcherId',
       startDate: testStartDate,
       endDate: testEndDate,
       pitcherId: testPitcherId
@@ -163,27 +165,49 @@ describe('queryPlaysFromDynamo', () => {
     expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(1, input.startDate, 0)
     expect(toGameIndexSpy).toHaveBeenNthCalledWith(2, input.endDate, 999999)
-    expect(mockQueryInSortKeyRange).toHaveBeenCalledWith(true, testPitcherId, testGameIndex, testGameIndex2)
+    expect(mockQueryInSortKeyRange).toHaveBeenCalledWith(input.playerKey, testPitcherId, testGameIndex, testGameIndex2, {})
     expect(result).toEqual([testDynamoPlay])
   })
 
-  test('throws error if batterId and pitcherId are both missing', async () => {
+  test('throws error if invalid playerKey is passed in', async () => {
     const input = {
+      playerKey: 'someBadKey',
       startDate: testStartDate,
-      endDate: testEndDate
+      endDate: testEndDate,
+      batterId: testBatterId
     }
     const action = async () => await queryPlaysFromDynamo(input)
-    await expect(action).rejects.toThrowError(MissingPartitionKeyError)
+    await expect(action).rejects.toThrowError(MissingPlayerKeyError)
   })
 
-  test('throws error if batterId and pitcherId are both present', async () => {
+  test('throws error if playerKey is passed in with no matching attribute', async () => {
     const input = {
+      playerKey: 'pitcherId',
+      startDate: testStartDate,
+      endDate: testEndDate,
+      batterId: testBatterId
+    }
+    const action = async () => await queryPlaysFromDynamo(input)
+    await expect(action).rejects.toThrowError(MissingPlayerKeyError)
+  })
+
+  test('optional attributes work correctly', async () => {
+    const input = {
+      playerKey: 'batterId',
       startDate: testStartDate,
       endDate: testEndDate,
       batterId: testBatterId,
-      pitcherId: testPitcherId
+      pitcherId: testPitcherId,
+      batSide: 'L',
+      pitchHand: 'R'
     }
-    const action = async () => await queryPlaysFromDynamo(input)
-    await expect(action).rejects.toThrowError(NonUniquePartitionKeyError)
+    const result = await queryPlaysFromDynamo(input)
+    expect(makeDynamoClientSpy).toHaveBeenCalledWith(DynamoPlay)
+    expect(toGameIndexSpy).toHaveBeenNthCalledWith(1, input.startDate, 0)
+    expect(toGameIndexSpy).toHaveBeenNthCalledWith(2, input.endDate, 999999)
+    expect(mockQueryInSortKeyRange).toHaveBeenCalledWith(input.playerKey, testBatterId, testGameIndex, testGameIndex2, {
+      pitcherId: testPitcherId, batSide: 'L', pitchHand: 'R'
+    })
+    expect(result).toEqual([testDynamoPlay])
   })
 })

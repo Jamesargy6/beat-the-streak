@@ -1,7 +1,7 @@
 import { makeDynamoClient } from './dynamoDB/client.factory'
 import { toGameIndex, toDynamoPlays, toDynamoGameDetail } from './dynamoDB/transform'
 import { DynamoPlay, DynamoGameDetail } from './dynamoDB/types'
-import { MissingPartitionKeyError, NonUniquePartitionKeyError } from './errors'
+import { MissingPlayerKeyError } from './errors'
 
 type WritePlaysToDynamoInput = {
   date: string,
@@ -41,26 +41,42 @@ const readGameDetailFromDynamo = async (event: ReadGameDetailFromDynamoInput): P
 }
 
 type queryPlaysFromDynamoInput = {
+  playerKey: string,
   startDate: string,
   endDate: string,
   batterId?: number,
   pitcherId?: number
+  batSide?: string,
+  pitchHand?: string
 }
 const queryPlaysFromDynamo = async (event: queryPlaysFromDynamoInput): Promise<Array<DynamoPlay>> => {
-  const dynamoClient = makeDynamoClient(DynamoPlay)
-  const { startDate, endDate, batterId, pitcherId } = event
-  if (batterId && pitcherId) {
-    throw new NonUniquePartitionKeyError()
+  const { playerKey, startDate, endDate, batterId, pitcherId, batSide, pitchHand } = event
+  const playerKeyTransformMap: { 
+    [playerKey: string]: [
+      number | undefined,
+      string,
+      number | undefined
+    ] 
+  } = {
+    batterId:   [batterId, 'pitcherId', pitcherId],
+    pitcherId:  [pitcherId, 'batterId', batterId]
   }
-  const partitionKeyValue = batterId ? batterId : pitcherId
-  if (!partitionKeyValue) {
-    throw new MissingPartitionKeyError()
+  const [playerKeyValue, filterPlayerKey, filterPlayerKeyValue] = playerKeyTransformMap[playerKey] || []
+  
+  if (!playerKeyValue) {
+    throw new MissingPlayerKeyError(playerKey)
   }
-  const useGlobalSecondaryIndex = !!pitcherId
-  const sortKeyStartValue = toGameIndex(startDate, 0)
-  const sortKeyEndValue = toGameIndex(endDate, 999999)
 
-  return dynamoClient.queryInSortKeyRange(useGlobalSecondaryIndex, partitionKeyValue, sortKeyStartValue, sortKeyEndValue)
+  const filterAttributes = { 
+    ...(batSide && { batSide }),
+    ...(pitchHand && { pitchHand }),
+    ...(filterPlayerKeyValue && { [filterPlayerKey]: filterPlayerKeyValue })
+  }
+  const gameIndexStart = toGameIndex(startDate, 0)
+  const gameIndexEnd = toGameIndex(endDate, 999999)
+
+  const dynamoClient = makeDynamoClient(DynamoPlay)
+  return dynamoClient.queryInSortKeyRange(playerKey, playerKeyValue, gameIndexStart, gameIndexEnd, filterAttributes)
 }
 
 export { writePlaysToDynamo, writeGameDetailToDynamo, readGameDetailFromDynamo, queryPlaysFromDynamo }

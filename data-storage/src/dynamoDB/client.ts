@@ -1,5 +1,5 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
-import { InvalidIndexException, InvalidSortKeyException, NotFoundError } from './errors'
+import { InvalidKeySchemaException, NotFoundError } from './errors'
 import { DynamoBaseItemType, DynamoConfig } from './types'
 
 const MAX_CHUNK_SIZE = 25
@@ -43,7 +43,7 @@ class DynamoClient<T extends DynamoBaseItemType> {
   }
 
   async read(partitionKeyValue: string | number, sortKeyValue?: string | number): Promise<T> {
-    const { tableName, primaryKey: { partitionKey, sortKey } } = this._dynamoConfig
+    const { tableName, primaryKeySchema: { partitionKey, sortKey } } = this._dynamoConfig
     const getCommandInputKey = { [partitionKey]: partitionKeyValue }
     sortKey && sortKeyValue ? getCommandInputKey[sortKey] = sortKeyValue : {}
     const { Item: result } = await this._client.get({
@@ -58,30 +58,41 @@ class DynamoClient<T extends DynamoBaseItemType> {
     return dynamoItem
   }
 
-  async queryInSortKeyRange(useGlobalSecondaryIndex: boolean, 
+  async queryInSortKeyRange(partitionKey: string, 
     partitionKeyValue: string | number, 
     sortKeyStartValue: string | number, 
-    sortKeyEndValue: string | number): Promise<Array<T>> {
-      const { tableName, primaryKey, secondaryKey } = this._dynamoConfig      
-      const index = useGlobalSecondaryIndex ? secondaryKey : primaryKey
-      if (!index) {
-        throw new InvalidIndexException()
-      }
-      const { partitionKey, sortKey, indexName } = index
+    sortKeyEndValue: string | number,
+    filterAttributes?: { [attribute: string]: string | number }): Promise<Array<T>> { 
+      const { tableName, primaryKeySchema, secondaryKeySchemas } = this._dynamoConfig 
+
+      const keySchema = secondaryKeySchemas?.[partitionKey] || primaryKeySchema
+      const { sortKey, indexName } = keySchema
       if (!sortKey) {
-        throw new InvalidSortKeyException()
+        throw new InvalidKeySchemaException()
       }
+
+      const [filterExpression, filterExpressionAttributeValues] = Object.entries(filterAttributes || {}).reduce(
+        ([currentFilterExpression, currentFilterExpressionAttributeValues], [key, value]) => {
+          const keyExpression = `:${key}Value`
+          currentFilterExpression += (currentFilterExpression ? ' AND ' : '') + `${key} = ${keyExpression}`
+          currentFilterExpressionAttributeValues[keyExpression] = value
+          return [currentFilterExpression, currentFilterExpressionAttributeValues]
+        }, 
+        ['', {}]
+      )
 
       const keyConditionExpression = `${partitionKey} = :partitionKeyValue AND ${sortKey} BETWEEN :sortKeyStartValue AND :sortKeyEndValue`
       const expressionAttributeValues = {
         ':partitionKeyValue': partitionKeyValue,
         ':sortKeyStartValue': sortKeyStartValue,
-        ':sortKeyEndValue': sortKeyEndValue
+        ':sortKeyEndValue': sortKeyEndValue,
+        ...filterExpressionAttributeValues
       }
       const { Items: results } = await this._client.query({
         TableName: tableName,
         IndexName: indexName,
         KeyConditionExpression: keyConditionExpression,
+        FilterExpression: filterExpression,
         ExpressionAttributeValues: expressionAttributeValues
       })
 

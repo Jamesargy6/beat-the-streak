@@ -20,8 +20,10 @@ type KeySchema = {
 
 type DynamoConfig = {
   tableName: string, 
-  primaryKey: KeySchema,
-  secondaryKey?: KeySchema 
+  primaryKeySchema: KeySchema,
+  secondaryKeySchemas?: {
+    [partitionKey: string]: KeySchema 
+  }
 }
 
 export { DynamoBaseItemType, DynamoPlay, DynamoGameDetail, DynamoConfig }

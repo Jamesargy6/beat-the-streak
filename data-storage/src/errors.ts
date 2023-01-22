@@ -1,21 +1,11 @@
-class MissingPartitionKeyError extends Error {
+class MissingPlayerKeyError extends Error {
   __proto__ = Error
   /* istanbul ignore next */
-  constructor() {
-    super()
-    Object.setPrototypeOf(this, MissingPartitionKeyError.prototype)
-    this.name = 'MissingPartitionKeyError'
+  constructor(playerKey: string) {
+    super(`Player key ${playerKey} specified but not provided`)
+    Object.setPrototypeOf(this, MissingPlayerKeyError.prototype)
+    this.name = 'MissingPlayerKeyError'
   }
 } 
 
-class NonUniquePartitionKeyError extends Error {
-  __proto__ = Error
-  /* istanbul ignore next */
-  constructor() {
-    super()
-    Object.setPrototypeOf(this, NonUniquePartitionKeyError.prototype)
-    this.name = 'NonUniquePartitionKeyError'
-  }
-} 
-
-export { MissingPartitionKeyError, NonUniquePartitionKeyError }
+export { MissingPlayerKeyError }
