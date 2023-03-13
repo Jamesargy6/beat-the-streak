@@ -1,9 +1,9 @@
-import { Play as APIPlay, LeftRightCode, PlayByPlay, Schedule, BoxScore, BoxScoreInfoLabel } from 'mlb-stats-api'
+import { Play as APIPlay, LeftRightCode, PlayByPlay, Schedule } from 'mlb-stats-api'
 import * as mlbStatsAPIClientFactory from '../src/mlbStatsAPI/client.factory'
 import * as transform from '../src/mlbStatsAPI/transform'
 
-import { getPlays, getGames, getGameDetail } from '../src/handler'
-import { Play, GameDetail } from '../src/mlbStatsAPI/types'
+import { getPlays, getGames } from '../src/handler'
+import { Play } from '../src/mlbStatsAPI/types'
 
 jest.mock('../src/mlbStatsAPI/client')
 jest.mock('../src/mlbStatsAPI/transform')
@@ -20,7 +20,39 @@ beforeEach(() => {
 describe('getGames', () => {
   const testSchedule: Schedule = { dates: [] }
   
-  const testGames = [{ gamePk: 1, date: '2022-04-01', gameNumber: 1 }, { gamePk: 2, date: '2022-04-01', gameNumber: 1 }]
+  const testGames = [{
+    gamePk: 1,
+    date: '2022-04-01',
+    gameNumber:  1,
+    gameDetail: {
+      venueId: 7,
+      awayBattingOrder: [4, 5 ,6],
+      awayProbablePitcher: 9,
+      homeBattingOrder: [1, 2, 3],
+      homeProbablePitcher: 8,
+      weather: {
+        condition: 'Dome',
+        temp: '72',
+        wind: '0mph, None'
+      },
+    }
+  }, {
+    gamePk: 2,
+    date: '2022-04-01',
+    gameNumber:  1,
+    gameDetail: {
+      venueId: 7,
+      awayBattingOrder: [4, 5 ,6],
+      awayProbablePitcher: 9,
+      homeBattingOrder: [1, 2, 3],
+      homeProbablePitcher: 8,
+      weather: {
+        condition: 'Dome',
+        temp: '72',
+        wind: '0mph, None'
+      },
+    }
+  }]
   const mockToGames = jest.fn((_: Schedule) => testGames)
 
   let getGamePksFromScheduleSpy
@@ -107,86 +139,5 @@ describe('getPlays', () => {
     jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
     await getPlays({ gamePk })
     expect(toPlaySpy).not.toHaveBeenCalled()
-  })
-})
-
-describe('getGameDetail', () => {
-  const testBoxScore: BoxScore = {
-    teams: {
-        away: {
-            team: {
-                venue: {
-                    id: 5
-                },
-            },
-            battingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
-           
-        },
-        home: {
-            team: {
-                venue: {
-                    id: 7
-                },
-            },
-            battingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032]
-        }
-    },
-    info: [
-       
-        {
-            label: BoxScoreInfoLabel.Weather,
-            value: '47 degrees, Cloudy.'
-        },
-        {
-            label:  BoxScoreInfoLabel.Wind,
-            value: '16 mph, L To R.'
-        }
-    ]
-  }
-  const testContextMetrics = {
-    game: {
-      teams: {
-        away: {
-          probablePitcher: { id: 669456 }
-        },
-        home: {
-          probablePitcher: { id: 425844 }
-        }
-      }
-    }
-  }
-
-  const testGameDetail: GameDetail = {
-    venueId: 7,
-    awayBattingOrder: [664702, 642708, 608070, 614177, 640458, 644374, 680757, 595978, 665926],
-    awayProbablePitcher: 669456,
-    homeBattingOrder: [593160, 677951, 643217, 521692, 467793, 641531, 609275, 572191, 670032],
-    homeProbablePitcher: 425844,
-    weather: '47 degrees, Cloudy.',
-    wind: '16 mph, L To R.'
-  }
-  const mockToGameDetail = jest.fn((_: BoxScore) => testGameDetail)
-
-  let toGameDetailSpy
-  beforeEach(() => {
-    mockGetBoxScore = jest.fn(async (_: number) => testBoxScore)
-    mockGetContextMetrics = jest.fn(async (_: number) => testContextMetrics)
-    toGameDetailSpy = jest.spyOn(transform, 'toGameDetail').mockImplementation(mockToGameDetail)
-    jest.spyOn(mlbStatsAPIClientFactory, 'makeMLBStatsAPIClient').mockImplementation(() => mockMLBStatsAPIClient)
-    mockMLBStatsAPIClient = { 
-      getRegularSeasonGames: mockGetRegularSeasonGames,
-      getPlayByPlay: mockGetPlayByPlay,
-      getBoxScore: mockGetBoxScore,
-      getContextMetrics: mockGetContextMetrics
-    } 
-  })
-
-  const gamePk = 662766
-  test('wiring', async () => {
-    const result = await getGameDetail({ gamePk })
-    expect(mockMLBStatsAPIClient.getBoxScore).toHaveBeenCalledWith(662766)
-    expect(mockMLBStatsAPIClient.getContextMetrics).toHaveBeenCalledWith(662766)
-    expect(toGameDetailSpy).toHaveBeenCalledWith(testBoxScore, testContextMetrics)
-    expect(result).toEqual(testGameDetail)
   })
 })

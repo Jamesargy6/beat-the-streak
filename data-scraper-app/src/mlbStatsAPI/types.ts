@@ -1,9 +1,9 @@
-import { LeftRightCode, PlayEventType } from 'mlb-stats-api'
+import { LeftRightCode } from 'mlb-stats-api'
 
 export type Play = {
   batterId: number,
   batSide: LeftRightCode,
-  playResult: PlayEventType,
+  playResult: string,
   pitcherId: number,
   pitchHand: LeftRightCode
 }
@@ -11,15 +11,17 @@ export type Play = {
 export type Game = {
   gamePk: number,
   date: string,
-  gameNumber: number
-}
-
-export type GameDetail = {
-  venueId: number,
-  awayBattingOrder: Array<number>,
-  awayProbablePitcher: number | null,
-  homeBattingOrder: Array<number>,
-  homeProbablePitcher: number | null,
-  weather: string,
-  wind: string,
+  gameNumber: number,
+  gameDetail: {
+    venueId: number,
+    awayBattingOrder: Array<number>,
+    awayProbablePitcher: number | null,
+    homeBattingOrder: Array<number>,
+    homeProbablePitcher: number | null,
+    weather: {
+      condition: string,
+      temp: string,
+      wind: string
+    }
+  }
 }
