@@ -7,120 +7,71 @@ declare module 'mlb-stats-api' {
     RegularSeason = 'R'
   }
 
-  const enum LeftRightCode {
+  export const enum HydrationOptions {
+    Lineups = 'lineups',
+    Venue = 'venue',
+    Weather = 'weather',
+    Stats = 'stats',
+    ProbablePitcher = 'probablePitcher'
+  }
+
+  export const enum LeftRightCode {
     Left = 'L',
     Right = 'R'
   }
 
-  type PlayEventType = string
+  export type Schedule = { 
+    dates: Array<{ 
+      games: Array<{ 
+        gamePk: number, 
+        officialDate: string, 
+        gameNumber: number,
+        venue: { id: number },
+        weather: {
+          condition: string,
+          temp: string,
+          wind: string
+        },
+        teams: {
+          away: { probablePitcher: { id: number } },
+          home: { probablePitcher: { id: number } }
+        },
+        lineups: {
+          homePlayers: Array<{ id: number }>,
+          awayPlayers: Array<{ id: number }>,
+        }
+      }> 
+    }> 
+  }
 
-  type Game = { gamePk: number, officialDate: string, gameNumber: number }
-  type Date = { games: Array<Game> }
-  export type Schedule = { dates: Array<Date> }
-  
-  type PlayResult = {
-    eventType: PlayEventType
-  }
-  type PlayAbout = {
-    isComplete: boolean
-  }
-  type MatchupPlayer = {
-    id: number
-  }
-  type PlayerSide = {
-    code: LeftRightCode 
-  }
-  type PlayMatchup = {
-    batter: MatchupPlayer,
-    batSide: PlayerSide,
-    pitcher: MatchupPlayer,
-    pitchHand: PlayerSide,
-
-  }
   export type Play = {
-    result: PlayResult,
-    about: PlayAbout,
-    matchup: PlayMatchup,
+    result: { eventType: string },
+    about: { isComplete: boolean },
+    matchup: {
+      batter: { id: number },
+      batSide: { code: LeftRightCode },
+      pitcher: { id: number },
+      pitchHand: { code: LeftRightCode },
+    },
   }
   export type PlayByPlay = {
     allPlays: Array<Play>
   }
 
-  type Venue = {
-    id: number
-  }
-  type BoxScoreTeamGeneralInfo = {
-    venue: Venue
-  }
-  type BoxScoreTeam = {
-    team: BoxScoreTeamGeneralInfo,
-    battingOrder: Array<number>
-  }
-
-  export const enum BoxScoreInfoLabel {
-    Weather = 'Weather',
-    Wind = 'Wind'
-  }
-
-  type BoxScoreInfo = {
-    label: BoxScoreInfoLabel,
-    value: string
-  }
-  export type BoxScore = {
-    teams: {
-      away: BoxScoreTeam,
-      home: BoxScoreTeam,
-    }
-    info: Array<BoxScoreInfo>
-  }
-
-  type ContextMetricsProbablePitcher = {
-    id: number
-  }
-
-  type ContextMetricsTeam = {
-    probablePitcher?: ContextMetricsProbablePitcher
-  }
-
-  type ContextMetricsGame = {
-    teams: {
-      away: ContextMetricsTeam,
-      home: ContextMetricsTeam,
-    }
-  }
-
-  export type ContextMetrics = {
-    game: ContextMetricsGame
-  }
-
-  export type GetScheduleParams = {
+  type GetScheduleParams = {
     params: {
       sportId: SportID,
       startDate: string,
       endDate: string,
-      gameType?: GameType
+      gameType?: GameType,
+      hydrate?: string
     }
   }
-  export type GetScheduleResponse = { data: Schedule }
-
-  export type GetPlayByPlayParams = {
+  type GetPlayByPlayParams = {
     pathParams: { gamePk: number }
   }
-  export type GetGamePlayByPlayResponse = { data: PlayByPlay }
-
-  export type GetGameBoxscoreParams = {
-    pathParams: { gamePk: number }
-  }
-  export type GetGameBoxscoreResponse = { data: BoxScore }
-
-  export type GetGameContextMetricsParams = {
-    pathParams: { gamePk: number }
-  }
-  export type GetGameContextMetricsResponse = { data: ContextMetrics }
   export default class MLBStatsAPI {
-     getSchedule(params: GetScheduleParams): Promise<GetScheduleResponse>
-     getGamePlayByPlay(params: GetPlayByPlayParams): Promise<GetGamePlayByPlayResponse>
-     getGameBoxscore(params: GetGameBoxscoreParams): Promise<GetGameBoxscoreResponse>
-     getGameContextMetrics(params: GetGameContextMetricsParams): Promise<GetGameContextMetricsResponse>
+     getSchedule(params: GetScheduleParams): Promise<{ data: Schedule }>
+     getGamePlayByPlay(params: GetPlayByPlayParams): Promise<{ data: PlayByPlay }>
   }
 }

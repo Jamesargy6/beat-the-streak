@@ -1,10 +1,22 @@
 
-import { BoxScore, Play as APIPlay, Schedule, BoxScoreInfoLabel, ContextMetrics } from 'mlb-stats-api'
-import { Play, Game, GameDetail } from './types'
+import { Play as APIPlay, Schedule } from 'mlb-stats-api'
+import { Play, Game } from './types'
 
 const toGames = (schedule: Schedule): Array<Game> => {
   const games = schedule.dates.reduce((currentGameDates: Array<Game>, date) => {
-          const dtGames = date.games.map(g => ({ gamePk: g.gamePk, date: g.officialDate, gameNumber: g.gameNumber }))
+          const dtGames = date.games.map(g => ({ 
+            gamePk: g.gamePk, 
+            date: g.officialDate,
+            gameNumber: g.gameNumber,
+            gameDetail: {
+              venueId: g.venue.id,
+              awayBattingOrder: g.lineups.awayPlayers.map(p => p.id),
+              awayProbablePitcher: g.teams.away.probablePitcher.id,
+              homeBattingOrder: g.lineups.homePlayers.map(p => p.id),
+              homeProbablePitcher: g.teams.home.probablePitcher.id,
+              weather: g.weather
+            }
+          }))
           currentGameDates.push(...dtGames)
           return currentGameDates
       },
@@ -25,31 +37,4 @@ const toPlay = (play: APIPlay): Play => {
   }
 }
 
-const toGameDetail = (boxscore: BoxScore, contextMetrics: ContextMetrics): GameDetail => {
-  const { teams: boxScoreTeams, info } = boxscore
-  const { away: boxScoreAway, home: boxScoreHome } = boxScoreTeams
-  const { team: boxScoreHomeTeam, battingOrder: homeBattingOrder } = boxScoreHome
-  const venueId = boxScoreHomeTeam.venue.id
-  const { battingOrder: awayBattingOrder } = boxScoreAway
-  const weatherInfo = info.find(item => item.label == BoxScoreInfoLabel.Weather) || { value: '' }
-  const { value: weather } = weatherInfo
-  const windInfo = info.find(item => item.label == BoxScoreInfoLabel.Wind) || { value: '' }
-  const { value: wind } = windInfo
-
-  const { game } = contextMetrics
-  const { teams: contextMetricsTeams } = game
-  const { away: contextMetricsAway, home: contextMetricsHome } = contextMetricsTeams
-  const awayProbablePitcher = contextMetricsAway.probablePitcher ? contextMetricsAway.probablePitcher.id : null
-  const homeProbablePitcher = contextMetricsHome.probablePitcher ? contextMetricsHome.probablePitcher.id : null
-  return { 
-    venueId,
-    awayBattingOrder,
-    awayProbablePitcher,
-    homeBattingOrder,
-    homeProbablePitcher,
-    weather,
-    wind,
-  }
-}
-
-export { toGames, toPlay, toGameDetail }
+export { toGames, toPlay }

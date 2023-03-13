@@ -79,17 +79,8 @@ stepFunctions:
                       GetPlaysFinalState:
                         Type: Pass
                         End: true
-                  - StartAt: GetGameDetail
+                  - StartAt: WriteGameDetailToDynamo
                     States:
-                      GetGameDetail:
-                        Type: Task
-                        Resource:
-                          Fn::GetAtt: [getGameDetail, Arn]
-                        ResultPath: $.gameDetail
-                        Catch:
-                        - ErrorEquals: [GameNotFoundError]
-                          Next: GetGameDetailFinalState
-                        Next: WriteGameDetailToDynamo
                       WriteGameDetailToDynamo:
                         Type: Task
                         Parameters:
