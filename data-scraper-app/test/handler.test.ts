@@ -35,7 +35,8 @@ describe('getGames', () => {
         temp: '72',
         wind: '0mph, None'
       },
-    }
+    },
+    isComplete: true
   }, {
     gamePk: 2,
     date: '2022-04-01',
@@ -51,7 +52,8 @@ describe('getGames', () => {
         temp: '72',
         wind: '0mph, None'
       },
-    }
+    },
+    isComplete: true
   }]
   const mockToGames = jest.fn((_: Schedule) => testGames)
 
@@ -74,7 +76,19 @@ describe('getGames', () => {
     const result = await getGames({ startDate, endDate })
     expect(mockMLBStatsAPIClient.getRegularSeasonGames).toHaveBeenCalledWith(startDate, endDate)
     expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
-    expect(result).toBe(testGames)
+    expect(result).toStrictEqual(testGames)
+  })
+  test('filters out incomplete games', async () => {
+    const startDate = '2022-04-01'
+    const endDate = '2022-04-01'
+    const incompleteGame = {}
+    Object.assign(incompleteGame, testGames[0])
+    incompleteGame['isComplete'] = false
+    getGamePksFromScheduleSpy.mockImplementationOnce(jest.fn((_: Schedule) => [...testGames, incompleteGame]))
+    const result = await getGames({ startDate, endDate })
+    expect(mockMLBStatsAPIClient.getRegularSeasonGames).toHaveBeenCalledWith(startDate, endDate)
+    expect(getGamePksFromScheduleSpy).toHaveBeenCalledWith(testSchedule)
+    expect(result).toHaveLength(2)
   })
 })
 

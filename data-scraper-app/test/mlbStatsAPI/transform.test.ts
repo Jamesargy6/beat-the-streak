@@ -20,6 +20,7 @@ const makeGame = ({
     homePlayers: [{ id: 1 }, { id: 2 }, { id: 3 }],
     awayPlayers: [{ id: 4 }, { id: 5 }, { id: 6 }]
   },
+  status = { codedGameState: 'F' }
 } = {}) => ({
   gamePk,
   officialDate,
@@ -28,6 +29,7 @@ const makeGame = ({
   weather,
   teams,
   lineups,
+  status
 })
 
 const makeExpectedGame = ({
@@ -45,12 +47,14 @@ const makeExpectedGame = ({
       temp: '72',
       wind: '0mph, None'
     },
-  }
+  },
+  isComplete = true
 } = {}) => ({
   gamePk,
   date,
   gameNumber,
-  gameDetail
+  gameDetail,
+  isComplete
 })
 
 describe('toGames', () => {

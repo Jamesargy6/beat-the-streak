@@ -7,7 +7,8 @@ const getGames = async ({ startDate, endDate }: GetGamesInput): Promise<Array<Ga
   const mlbStatsAPIClient = makeMLBStatsAPIClient()
     const schedule = await mlbStatsAPIClient.getRegularSeasonGames(startDate, endDate)
     const games = toGames(schedule)
-    return games
+    const completedGames = games.filter(game => game.isComplete)
+    return completedGames
 }
 
 type GetPlaysInput = { gamePk: number }
