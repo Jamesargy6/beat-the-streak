@@ -20,6 +20,10 @@ declare module 'mlb-stats-api' {
     Right = 'R'
   }
 
+  export const enum GameState {
+    Final = 'F'
+  }
+
   export type Schedule = { 
     dates: Array<{ 
       games: Array<{ 
@@ -39,7 +43,8 @@ declare module 'mlb-stats-api' {
         lineups: {
           homePlayers: Array<{ id: number }>,
           awayPlayers: Array<{ id: number }>,
-        }
+        },
+        status: { codedGameState: string }
       }> 
     }> 
   }

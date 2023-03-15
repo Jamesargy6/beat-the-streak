@@ -1,5 +1,5 @@
 
-import { Play as APIPlay, Schedule } from 'mlb-stats-api'
+import { Play as APIPlay, Schedule, GameState } from 'mlb-stats-api'
 import { Play, Game } from './types'
 
 const toGames = (schedule: Schedule): Array<Game> => {
@@ -15,7 +15,8 @@ const toGames = (schedule: Schedule): Array<Game> => {
               homeBattingOrder: g.lineups.homePlayers.map(p => p.id),
               homeProbablePitcher: g.teams.home.probablePitcher.id,
               weather: g.weather
-            }
+            },
+            isComplete: g.status.codedGameState == GameState.Final
           }))
           currentGameDates.push(...dtGames)
           return currentGameDates
