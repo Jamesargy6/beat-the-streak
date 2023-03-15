@@ -23,6 +23,5 @@ export type Game = {
       temp: string,
       wind: string
     }
-  },
-  isComplete: boolean
+  }
 }
