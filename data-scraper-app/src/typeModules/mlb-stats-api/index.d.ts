@@ -43,8 +43,7 @@ declare module 'mlb-stats-api' {
         lineups: {
           homePlayers: Array<{ id: number }>,
           awayPlayers: Array<{ id: number }>,
-        },
-        status: { codedGameState: string }
+        }
       }> 
     }> 
   }
