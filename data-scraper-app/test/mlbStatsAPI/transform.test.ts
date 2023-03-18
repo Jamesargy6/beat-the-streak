@@ -19,8 +19,7 @@ const makeGame = ({
   lineups = {
     homePlayers: [{ id: 1 }, { id: 2 }, { id: 3 }],
     awayPlayers: [{ id: 4 }, { id: 5 }, { id: 6 }]
-  },
-  status = { codedGameState: 'F' }
+  }
 } = {}) => ({
   gamePk,
   officialDate,
@@ -28,8 +27,7 @@ const makeGame = ({
   venue,
   weather,
   teams,
-  lineups,
-  status
+  lineups
 })
 
 const makeExpectedGame = ({
@@ -77,7 +75,21 @@ describe('toGames', () => {
     makeExpectedGame({ gamePk: 3, date: '2022-04-02' }),
     makeExpectedGame({ gamePk: 4, date: '2022-04-02' })
   ]}
-  ${{ dates: [{ games: [makeGame({ status: { codedGameState: 'D' } })] }] }} | ${[
+  ${{ dates: [{ games: [{
+    gamePk: 1,
+    officialDate: '2022-04-01',
+    gameNumber:  1,
+    venue: { id: 7 },
+    weather: {
+      condition: 'Dome',
+      temp: '72',
+      wind: '0mph, None'
+    },
+    teams: {
+      away: { probablePitcher: { id: 9 } },
+      home: { probablePitcher: { id: 8 } }
+    }
+  }] }] }} | ${[
     makeExpectedGame({
       gameDetail: {
         venueId: 7,
