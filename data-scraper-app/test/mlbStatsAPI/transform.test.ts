@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { Play as APIPlay, LeftRightCode } from 'mlb-stats-api'
 import { toGames, toPlay } from '../../src/mlbStatsAPI/transform'
 import { Play } from '../../src/mlbStatsAPI/types'
@@ -46,7 +47,7 @@ const makeExpectedGame = ({
       wind: '0mph, None'
     },
   }
-} = {}) => ({
+}: any = {}) => ({
   gamePk,
   date,
   gameNumber,
@@ -86,17 +87,17 @@ describe('toGames', () => {
       wind: '0mph, None'
     },
     teams: {
-      away: { probablePitcher: { id: 9 } },
-      home: { probablePitcher: { id: 8 } }
+      away: { },
+      home: { }
     }
   }] }] }} | ${[
     makeExpectedGame({
       gameDetail: {
         venueId: 7,
         awayBattingOrder: [], 
-        awayProbablePitcher: 9,
+        awayProbablePitcher: null,
         homeBattingOrder: [],
-        homeProbablePitcher: 8,
+        homeProbablePitcher: null,
         weather: {
           condition: 'Dome',
           temp: '72',

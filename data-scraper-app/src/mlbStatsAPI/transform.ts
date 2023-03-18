@@ -12,9 +12,9 @@ const toGames = (schedule: Schedule): Array<Game> => {
               gameDetail: {
                 venueId: g.venue.id,
                 awayBattingOrder: g.lineups ? g.lineups.awayPlayers.map(p => p.id) : [],
-                awayProbablePitcher: g.teams.away.probablePitcher.id,
+                awayProbablePitcher: g.teams.away.probablePitcher ? g.teams.away.probablePitcher.id : null,
                 homeBattingOrder: g.lineups ? g.lineups.homePlayers.map(p => p.id) : [],
-                homeProbablePitcher: g.teams.home.probablePitcher.id,
+                homeProbablePitcher: g.teams.home.probablePitcher ? g.teams.home.probablePitcher.id : null,
                 weather: g.weather
               }
             }
