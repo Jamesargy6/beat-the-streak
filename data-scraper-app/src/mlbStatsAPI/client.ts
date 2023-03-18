@@ -11,7 +11,6 @@ class MLBStatsAPIClient {
         HydrationOptions.Lineups,
         HydrationOptions.Venue,
         HydrationOptions.Weather,
-        HydrationOptions.Stats,
         HydrationOptions.ProbablePitcher
       ]
       const params = {
