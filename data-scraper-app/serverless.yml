@@ -24,6 +24,4 @@ functions:
   
   getPlays:
     handler: src/handler.getPlays
-  
-  getGameDetail:
-    handler: src/handler.getGameDetail
+    timeout: 20
