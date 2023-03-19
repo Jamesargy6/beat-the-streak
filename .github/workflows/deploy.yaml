@@ -78,8 +78,7 @@ jobs:
         run: sls deploy --stage dev --region ${{ env.AWS_REGION }} --force
   
   workflow-orchestration-deploy:
-    needs: data-storage-deploy
-    needs: data-scraper-app-deploy
+    needs: [data-storage-deploy, data-scraper-app-deploy]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
