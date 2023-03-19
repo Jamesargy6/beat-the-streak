@@ -27,10 +27,3 @@ functions:
   
   getGameDetail:
     handler: src/handler.getGameDetail
-
-resources:
-  Resources:
-    BTSDataScraperLogGroup:
-      Type: AWS::Logs::LogGroup
-      Properties:
-        LogGroupName: !Join [ /, [ stepFunctions, BTSDataScraper]]
