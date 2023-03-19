@@ -103,8 +103,8 @@ describe('prepareDataScraperInput', () => {
       },
     ]
     }
-  `('all date ranges', ({ startYear, endYear, expected }) => {
-      const result = prepareDataScraperInput({ startYear, endYear })
+  `('all date ranges', async ({ startYear, endYear, expected }) => {
+      const result = await prepareDataScraperInput({ startYear, endYear })
       expect(result).toStrictEqual(expected)
     })
 })

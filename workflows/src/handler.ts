@@ -1,7 +1,7 @@
 import { DateRange } from './types'
 
 type PrepareDataScraperInputInput = { startYear: number, endYear: number }
-const prepareDataScraperInput = ({ startYear, endYear }: PrepareDataScraperInputInput): Array<DateRange> => {
+const prepareDataScraperInput = async ({ startYear, endYear }: PrepareDataScraperInputInput): Promise<Array<DateRange>> => {
   const yearRange = Array.from({ length: (endYear - startYear + 1) }, (_, k) => k + startYear)
   const monthRange = Array.from({ length: 12 }, (_, key) => key)
 
