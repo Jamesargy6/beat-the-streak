@@ -1,5 +1,5 @@
-app: workflow-orchestration 
-service: workflow-orchestration
+app: workflows 
+service: workflows
 
 plugins:
   - serverless-plugin-typescript

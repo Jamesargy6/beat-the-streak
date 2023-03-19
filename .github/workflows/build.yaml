@@ -68,32 +68,32 @@ jobs:
           npm run lint
           npm run test
 
-  workflow-orchestration-build:
+  workflows-build:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     defaults:
       run:
         shell: bash
-        working-directory: workflow-orchestration
+        working-directory: workflows
 
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version-file: './workflow-orchestration/.nvmrc'
+          node-version-file: './workflows/.nvmrc'
       - uses: dorny/paths-filter@v2
         id: filter
         with:
           filters: |
-            workflow-orchestration:
-              - 'workflow-orchestration/**'
+            workflows:
+              - 'workflows/**'
 
       - name: Install packages
-        if: steps.filter.outputs.workflow-orchestration == 'true'
+        if: steps.filter.outputs.workflows == 'true'
         run: npm ci
 
       - name: Test
-        if: steps.filter.outputs.workflow-orchestration == 'true'
+        if: steps.filter.outputs.workflows == 'true'
         run: |
           npm run lint
           npm run test

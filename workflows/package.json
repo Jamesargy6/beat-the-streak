@@ -1,5 +1,5 @@
 {
-  "name": "workflow-orchestration",
+  "name": "workflows",
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
