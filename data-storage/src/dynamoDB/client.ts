@@ -1,5 +1,5 @@
 import { DynamoDBDocument } from '@aws-sdk/lib-dynamodb'
-import { InvalidKeySchemaException, NotFoundError } from './errors'
+import { InvalidKeySchemaError, NotFoundError } from './errors'
 import { DynamoBaseItemType, DynamoConfig } from './types'
 
 const MAX_CHUNK_SIZE = 25
@@ -68,7 +68,7 @@ class DynamoClient<T extends DynamoBaseItemType> {
       const keySchema = secondaryKeySchemas?.[partitionKey] || primaryKeySchema
       const { sortKey, indexName } = keySchema
       if (!sortKey) {
-        throw new InvalidKeySchemaException()
+        throw new InvalidKeySchemaError()
       }
 
       const [filterExpression, filterExpressionAttributeValues] = Object.entries(filterAttributes || {}).reduce(

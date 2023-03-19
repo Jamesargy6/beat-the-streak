@@ -1,5 +1,5 @@
 import { DynamoClient } from '../../src/dynamoDB/client'
-import { InvalidKeySchemaException, NotFoundError } from '../../src/dynamoDB/errors'
+import { InvalidKeySchemaError, NotFoundError } from '../../src/dynamoDB/errors'
 import { DynamoBaseItemType, DynamoConfig } from '../../src/dynamoDB/types'
 
 class TestDynamoClass extends DynamoBaseItemType { 
@@ -150,7 +150,7 @@ describe('Dynamoclient', () => {
 
     const thing = makeThing(testDynamoConfig)
     const action = async () => await thing.queryInSortKeyRange(testPartitionKey, testPartitionKeyValue, testSortKeyStartValue, testSortKeyEndValue)
-    expect(action).rejects.toThrowError(InvalidKeySchemaException)
+    expect(action).rejects.toThrowError(InvalidKeySchemaError)
   })
 
   test('queryInSortRange throws error if results are empty', async () =>{
