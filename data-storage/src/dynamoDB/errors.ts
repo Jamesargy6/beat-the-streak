@@ -1,10 +1,10 @@
-class InvalidKeySchemaException extends Error {
+class InvalidKeySchemaError extends Error {
   __proto__ = Error
   /* istanbul ignore next */
   constructor() {
     super()
-    Object.setPrototypeOf(this, InvalidKeySchemaException.prototype)
-    this.name = 'InvalidKeySchemaException'
+    Object.setPrototypeOf(this, InvalidKeySchemaError.prototype)
+    this.name = 'InvalidKeySchemaError'
   }
 } 
 class NotFoundError extends Error {
@@ -17,4 +17,4 @@ class NotFoundError extends Error {
   }
 } 
 
-export { InvalidKeySchemaException, NotFoundError }
+export { InvalidKeySchemaError, NotFoundError }
