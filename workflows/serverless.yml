@@ -95,7 +95,8 @@ stepFunctions:
                               Type: Pass
                               End: true
                       FinalState:
-                        Type: Pass
+                        Type: Wait
+                        Seconds: 1
                         End: true
                   ResultPath: null
                   End: true
