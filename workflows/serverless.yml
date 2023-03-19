@@ -98,6 +98,7 @@ stepFunctions:
                         Type: Pass
                         End: true
                   ResultPath: null
+                  End: true
             ResultPath: null
             End: true
 
